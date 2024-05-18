@@ -1,8 +1,12 @@
 package main
 
+//Configure how to use os import to clear terminal everytime user "hit back to main menu" option
 import (
+	//"os"
 	"fmt"
 	"time"
+	//"github.com/fatih/color"
+	//"github.com/rodaine/table"
 )
 
 // ----> Kamus Global <-----
@@ -56,6 +60,7 @@ func main() {
 			pencatatanTransaksi()
 		}
 	}
+	// End Program
 	menuEnd()
 }
 
@@ -132,7 +137,7 @@ func inputDataProduk(data *Data, n *int) {
 	fmt.Println("Stok Produk:")
 	fmt.Print(">>>> ")
 	fmt.Scan(&data[*n].stok)
-	for data[*n].stok == -1 {
+	for data[*n].stok == 0 {
 		fmt.Println("Stok produk kosong! Mohon masukkan stok produk: ")
 		fmt.Print(">>>> ")
 		fmt.Scan(&data[*n].stok)
@@ -146,23 +151,43 @@ func inputDataProduk(data *Data, n *int) {
 
 func tampilSemuaDataProduk(data Data, n int) {
 	var det int
-	menuHeaderKonfigurasiDataProduk()
+	//menuHeaderKonfigurasiDataProduk()
+	showAllProduct(data, n)
 	for det != 6 {
-		menuOptionsTampilSemuaProduk()
+		menuOptionsShowAllProduct()
 		fmt.Println("Masukkan menu: ")
 		fmt.Print(">>>> ")
 		if det == 1 {
-			showTampilSemuaProduk(data, n)
+			editProductData(&data)
 		} else if det == 2 {
-			editTampilSemuaProduk(&data)
+			deleteProductData(&data, &n)
 		}
+	}
+}
+
+func deleteProductData(data *Data, n *int) {
+	var x string
+	fmt.Println("Masukkan nama/jenis/merek produk yang ingin dihapus secara lengkap: ")
+	fmt.Print(">>>> ")
+	fmt.Scan(&x)
+	index := findSingleData(*data, *n, x)
+	if index == -1 {
+		fmt.Println("Data Tidak Ditemukan!")
+	} else {
+		i := index
+		for i <= *n-2 {
+			data[i] = data[i+1]
+			i++
+		}
+		*n = *n - 1
+		fmt.Println("Data Berhasil Dihapus!")
 	}
 }
 
 // Tampilkan data
 // TODO: need a better placement for the interface header
 // TODO_2: is calling tampilSemuaDataProduk() is necessary?
-func showTampilSemuaProduk(data Data, n int) {
+func showAllProduct(data Data, n int) {
 	fmt.Println("|------------------------------------------------------------------------------|")
 	fmt.Println("|                      T A B E L - D A T A - P R O D U K                       |")
 	fmt.Println("|------------------------------------------------------------------------------|")
@@ -186,10 +211,18 @@ func showTampilSemuaProduk(data Data, n int) {
  * MAXPRODUCT.
  * TODO_3: do we need to use by-pointers for the variables?
  */
-func editTampilSemuaProduk(data *Data) {
+func editProductData(data *Data) {
 	var n int
+	var namaTemp, merekTemp, jenisTemp string
+	var hargaTemp float64
+	var stokTemp int
 	fmt.Print("Masukkan kolom data yang akan diedit: ")
 	fmt.Scan(&n)
+	namaTemp = data[n-1].namaProduk
+	merekTemp = data[n-1].merek
+	jenisTemp = data[n-1].jenis
+	hargaTemp = data[n-1].harga
+	stokTemp = data[n-1].stok
 	if n == 0 && n > MAXPRODUCT {
 		fmt.Println("Masukkan kolom data yang benar!")
 		fmt.Print("Masukkan kolom data yang akan diedit: ")
@@ -198,50 +231,54 @@ func editTampilSemuaProduk(data *Data) {
 		fmt.Println("Nama Produk:")
 		fmt.Print(">>>> ")
 		fmt.Scan(&data[n-1].namaProduk)
-		for data[n-1].namaProduk == "" {
-			fmt.Println("Nama produk kosong! Mohon masukkan nama produk: ")
-			fmt.Print(">>>> ")
-			fmt.Scan(&data[n-1].namaProduk)
+		if data[n-1].namaProduk == "" {
+			data[n-1].namaProduk = namaTemp
 		}
 		fmt.Println("---------------------------")
 		fmt.Println("Merek Produk:")
 		fmt.Print(">>>>")
 		fmt.Scan(&data[n-1].merek)
-		for data[n-1].merek == "" {
-			fmt.Println("Merek produk kosong! Mohon masukkan merek produk: ")
-			fmt.Print(">>>> ")
-			fmt.Scan(&data[n-1].merek)
+		if data[n-1].merek == "" {
+			data[n-1].merek = merekTemp
 		}
 		fmt.Println("---------------------------")
 		fmt.Println("Jenis Produk:")
 		fmt.Print(">>>> ")
 		fmt.Scan(&data[n-1].jenis)
-		for data[n-1].jenis == "" {
-			fmt.Println("Jenis produk kosong! Mohon masukkan jenis produk: ")
-			fmt.Print(">>>> ")
-			fmt.Scan(&data[n-1].jenis)
+		if data[n-1].jenis == "" {
+			data[n-1].jenis = jenisTemp
 		}
 		fmt.Println("---------------------------")
 		fmt.Println("Harga Produk:")
 		fmt.Print(">>>> Rp.")
 		fmt.Scan(&data[n-1].harga)
-		for data[n-1].harga == 0 {
-			fmt.Println("Harga produk kosong! Mohon masukkan harga produk: ")
-			fmt.Print(">>>> Rp.")
-			fmt.Scan(&data[n-1].harga)
+		if data[n-1].harga == 0 {
+			data[n-1].harga = hargaTemp
 		}
 		fmt.Println("---------------------------")
 		fmt.Println("Stok Produk:")
 		fmt.Print(">>>> ")
 		fmt.Scan(&data[n-1].stok)
-		for data[n-1].stok == -1 {
-			fmt.Println("Stok produk kosong! Mohon masukkan stok produk: ")
-			fmt.Print(">>>> ")
-			fmt.Scan(&data[n-1].stok)
+		if data[n-1].stok == 0 {
+			data[n-1].stok = stokTemp
 		}
 		fmt.Println("---------------------------")
-		fmt.Println("Data Ke-", n, "Berhasil Diinput")
+		fmt.Println("Data Ke-", n, "Berhasil Diedit")
 	}
+}
+
+// -----> Find Data Function using Sequential Search Algorithm <----
+
+func findSingleData(data Data, n int, x string) int {
+	var k int
+	var idx int = -1
+	for idx == -1 && k < n {
+		if data[k].namaProduk == x || data[k].merek == x || data[k].jenis == x {
+			idx = k
+		}
+		k++
+	}
+	return idx
 }
 
 // -----> Menampilkan menu secara estetik pada CLI <----------
@@ -277,13 +314,13 @@ func menuEnd() {
 	fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 }
 
-func menuOptionsTampilSemuaProduk() {
+func menuOptionsShowAllProduct() {
 	menuHeaderKonfigurasiDataProduk()
-	fmt.Println("1. Lihat data")
-	fmt.Println("2. Edit Data")
-	fmt.Println("3. Hapus Data")
-	fmt.Println("4. Cari Data")
-	fmt.Println("5. Urutkan Data")
+	fmt.Println("1. Edit Data")
+	fmt.Println("2. Hapus Data")
+	fmt.Println("3. Cari Data")
+	fmt.Println("4. Urutkan Data")
+	fmt.Println("5. Kembali Ke Menu Utama")
 }
 
 func menuHeaderKonfigurasiDataProduk() {
