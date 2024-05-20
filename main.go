@@ -10,7 +10,7 @@ import (
 	"github.com/rodaine/table"
 )
 
-// ----> Kamus Global <-----
+// ----> Variabel Global <-----
 
 type Produk struct {
 	namaProduk string
