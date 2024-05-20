@@ -1,12 +1,13 @@
 package main
 
-//Configure how to use os import to clear terminal everytime user "hit back to main menu" option
+//Configure how to use os import to clear terminal everytime user hit "back to main menu" option
 import (
 	//"os"
 	"fmt"
 	"time"
-	//"github.com/fatih/color"
-	//"github.com/rodaine/table"
+
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
 )
 
 // ----> Kamus Global <-----
@@ -53,7 +54,9 @@ func main() {
 		menuProcess()
 		fmt.Println("Masukkan nomor menu:")
 		fmt.Print(">>>> ")
-		fmt.Scan(&determinator)
+		fmt.Scanln(&determinator)
+		fmt.Print("\033[2J")
+		fmt.Print("\033[H")
 		if determinator == 1 {
 			konfigurasiDataProduk(&dataProduk, &nData)
 		} else if determinator == 2 {
@@ -67,23 +70,24 @@ func main() {
 // ----> Prosedur Untuk Menu Utama <----
 func konfigurasiDataProduk(data *Data, n *int) {
 	var det int
-	menuHeaderKonfigurasiDataProduk()
+	// menuHeaderKonfigurasiDataProduk()
 	menuOptionsKonfigurasiDataProduk()
 	fmt.Println("Masukkan menu: ")
 	fmt.Print(">>>> ")
-	fmt.Scan(&det)
+	fmt.Scanln(&det)
 	for det != 3 {
 		if det == 1 && *n < MAXPRODUCT {
 			inputDataProduk(data, n)
 		} else if det == 1 && *n >= MAXPRODUCT {
 			fmt.Println("Memori telah habis!")
 		} else if det == 2 {
-			tampilSemuaDataProduk(*data, *n)
+			tampilSemuaDataProduk(data, n)
 		}
+		// menuHeaderKonfigurasiDataProduk()
 		menuOptionsKonfigurasiDataProduk()
 		fmt.Println("Masukkan menu: ")
 		fmt.Print(">>>> ")
-		fmt.Scan(&det)
+		fmt.Scanln(&det)
 	}
 
 }
@@ -100,67 +104,74 @@ func inputDataProduk(data *Data, n *int) {
 	fmt.Println("---------------------------")
 	fmt.Println("Nama Produk:")
 	fmt.Print(">>>> ")
-	fmt.Scan(&data[*n].namaProduk)
+	fmt.Scanln(&data[*n].namaProduk)
 	for data[*n].namaProduk == "" {
 		fmt.Println("Nama produk kosong! Mohon masukkan nama produk: ")
 		fmt.Print(">>>> ")
-		fmt.Scan(&data[*n].namaProduk)
+		fmt.Scanln(&data[*n].namaProduk)
 	}
 	fmt.Println("---------------------------")
 	fmt.Println("Merek Produk:")
-	fmt.Print(">>>>")
-	fmt.Scan(&data[*n].merek)
+	fmt.Print(">>>> ")
+	fmt.Scanln(&data[*n].merek)
 	for data[*n].merek == "" {
 		fmt.Println("Merek produk kosong! Mohon masukkan merek produk: ")
 		fmt.Print(">>>> ")
-		fmt.Scan(&data[*n].merek)
+		fmt.Scanln(&data[*n].merek)
 	}
 	fmt.Println("---------------------------")
 	fmt.Println("Jenis Produk:")
 	fmt.Print(">>>> ")
-	fmt.Scan(&data[*n].jenis)
+	fmt.Scanln(&data[*n].jenis)
 	for data[*n].jenis == "" {
 		fmt.Println("Jenis produk kosong! Mohon masukkan jenis produk: ")
 		fmt.Print(">>>> ")
-		fmt.Scan(&data[*n].jenis)
+		fmt.Scanln(&data[*n].jenis)
 	}
 	fmt.Println("---------------------------")
 	fmt.Println("Harga Produk:")
 	fmt.Print(">>>> Rp.")
-	fmt.Scan(&data[*n].harga)
+	fmt.Scanln(&data[*n].harga)
 	for data[*n].harga == 0 {
 		fmt.Println("Harga produk kosong! Mohon masukkan harga produk: ")
 		fmt.Print(">>>> Rp.")
-		fmt.Scan(&data[*n].harga)
+		fmt.Scanln(&data[*n].harga)
 	}
 	fmt.Println("---------------------------")
 	fmt.Println("Stok Produk:")
 	fmt.Print(">>>> ")
-	fmt.Scan(&data[*n].stok)
+	fmt.Scanln(&data[*n].stok)
 	for data[*n].stok == 0 {
 		fmt.Println("Stok produk kosong! Mohon masukkan stok produk: ")
 		fmt.Print(">>>> ")
-		fmt.Scan(&data[*n].stok)
+		fmt.Scanln(&data[*n].stok)
 	}
 	fmt.Println("---------------------------")
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
 	fmt.Println("Data Ke-", *n+1, "Berhasil Diinput")
 	*n++
 }
 
 //TODO: Buat Prosedur dan Function untuk Sub-Menu dari Konfigurasi Data Produk
 
-func tampilSemuaDataProduk(data Data, n int) {
+func tampilSemuaDataProduk(data *Data, n *int) {
 	var det int
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
 	//menuHeaderKonfigurasiDataProduk()
-	showAllProduct(data, n)
-	for det != 6 {
+	showAllProduct(*data, *n)
+	for det != 5 {
 		menuOptionsShowAllProduct()
 		fmt.Println("Masukkan menu: ")
 		fmt.Print(">>>> ")
+		fmt.Scanln(&det)
 		if det == 1 {
-			editProductData(&data)
+			editProductData(data, *n)
 		} else if det == 2 {
-			deleteProductData(&data, &n)
+			deleteProductData(data, n)
+		} else if det == 3 {
+			showSearchedProduct(*data, *n)
 		}
 	}
 }
@@ -169,7 +180,7 @@ func deleteProductData(data *Data, n *int) {
 	var x string
 	fmt.Println("Masukkan nama/jenis/merek produk yang ingin dihapus secara lengkap: ")
 	fmt.Print(">>>> ")
-	fmt.Scan(&x)
+	fmt.Scanln(&x)
 	index := findSingleData(*data, *n, x)
 	if index == -1 {
 		fmt.Println("Data Tidak Ditemukan!")
@@ -188,16 +199,36 @@ func deleteProductData(data *Data, n *int) {
 // TODO: need a better placement for the interface header
 // TODO_2: is calling tampilSemuaDataProduk() is necessary?
 func showAllProduct(data Data, n int) {
-	fmt.Println("|------------------------------------------------------------------------------|")
-	fmt.Println("|                      T A B E L - D A T A - P R O D U K                       |")
-	fmt.Println("|------------------------------------------------------------------------------|")
-	fmt.Println("| No. | Nama Produk | Merek Produk | Jenis Produk | Harga Produk | Stok Produk |")
-	for i := 0; i < n; i++ {
-		fmt.Printf("| %d | %s | %s | %s | %.2f | %d |\n", i+1, data[i].namaProduk, data[i].merek, data[i].jenis, data[i].harga, data[i].stok)
-	}
-	fmt.Println("|------------------------------------------------------------------------------|")
 	fmt.Println()
-	tampilSemuaDataProduk(data, n)
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+	tbl := table.New("No.", "Nama Produk", "Merek Produk", "Jenis Produk", "Harga Produk", "Stok Produk")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+	for i := 0; i < n; i++ {
+		tbl.AddRow(i+1, data[i].namaProduk, data[i].merek, data[i].jenis, data[i].harga, data[i].stok)
+	}
+	tbl.Print()
+	fmt.Println()
+	//tampilSemuaDataProduk(data, n)
+}
+
+func showSearchedProduct(data Data, n int) {
+	var x string
+	fmt.Println("Masukkan nama/jenis/merek produk yang ingin dicari secara lengkap: ")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&x)
+	index := findSingleData(data, n, x)
+	fmt.Println()
+
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+	tbl := table.New("No.", "Nama Produk", "Merek Produk", "Jenis Produk", "Harga Produk", "Stok Produk")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
+	tbl.AddRow(index+1, data[index].namaProduk, data[index].merek, data[index].jenis, data[index].harga, data[index].stok)
+
+	tbl.Print()
+	fmt.Println()
 }
 
 // Edit Data
@@ -211,60 +242,71 @@ func showAllProduct(data Data, n int) {
  * MAXPRODUCT.
  * TODO_3: do we need to use by-pointers for the variables?
  */
-func editProductData(data *Data) {
+func editProductData(data *Data, x int) {
 	var n int
 	var namaTemp, merekTemp, jenisTemp string
 	var hargaTemp float64
 	var stokTemp int
 	fmt.Print("Masukkan kolom data yang akan diedit: ")
-	fmt.Scan(&n)
+	fmt.Scanln(&n)
 	namaTemp = data[n-1].namaProduk
 	merekTemp = data[n-1].merek
 	jenisTemp = data[n-1].jenis
 	hargaTemp = data[n-1].harga
 	stokTemp = data[n-1].stok
-	if n == 0 && n > MAXPRODUCT {
+	for n == 0 && n > MAXPRODUCT {
 		fmt.Println("Masukkan kolom data yang benar!")
 		fmt.Print("Masukkan kolom data yang akan diedit: ")
-		fmt.Scan(&n)
-	} else {
-		fmt.Println("Nama Produk:")
-		fmt.Print(">>>> ")
-		fmt.Scan(&data[n-1].namaProduk)
-		if data[n-1].namaProduk == "" {
-			data[n-1].namaProduk = namaTemp
-		}
-		fmt.Println("---------------------------")
-		fmt.Println("Merek Produk:")
-		fmt.Print(">>>>")
-		fmt.Scan(&data[n-1].merek)
-		if data[n-1].merek == "" {
-			data[n-1].merek = merekTemp
-		}
-		fmt.Println("---------------------------")
-		fmt.Println("Jenis Produk:")
-		fmt.Print(">>>> ")
-		fmt.Scan(&data[n-1].jenis)
-		if data[n-1].jenis == "" {
-			data[n-1].jenis = jenisTemp
-		}
-		fmt.Println("---------------------------")
-		fmt.Println("Harga Produk:")
-		fmt.Print(">>>> Rp.")
-		fmt.Scan(&data[n-1].harga)
-		if data[n-1].harga == 0 {
-			data[n-1].harga = hargaTemp
-		}
-		fmt.Println("---------------------------")
-		fmt.Println("Stok Produk:")
-		fmt.Print(">>>> ")
-		fmt.Scan(&data[n-1].stok)
-		if data[n-1].stok == 0 {
-			data[n-1].stok = stokTemp
-		}
-		fmt.Println("---------------------------")
-		fmt.Println("Data Ke-", n, "Berhasil Diedit")
+		fmt.Scanln(&n)
+		namaTemp = data[n-1].namaProduk
+		merekTemp = data[n-1].merek
+		jenisTemp = data[n-1].jenis
+		hargaTemp = data[n-1].harga
+		stokTemp = data[n-1].stok
 	}
+	fmt.Println("Nama Produk:")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&data[n-1].namaProduk)
+	if data[n-1].namaProduk == "\n" {
+		data[n-1].namaProduk = namaTemp
+	}
+	fmt.Println("---------------------------")
+	fmt.Println("Merek Produk:")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&data[n-1].merek)
+	if data[n-1].merek == "\n" {
+		data[n-1].merek = merekTemp
+		fmt.Println(merekTemp)
+	}
+	fmt.Println("---------------------------")
+	fmt.Println("Jenis Produk:")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&data[n-1].jenis)
+	if data[n-1].jenis == "\n" {
+		data[n-1].jenis = jenisTemp
+		fmt.Println(jenisTemp)
+	}
+	fmt.Println("---------------------------")
+	fmt.Println("Harga Produk:")
+	fmt.Print(">>>> Rp.")
+	fmt.Scanln(&data[n-1].harga)
+	if data[n-1].harga == 0 {
+		data[n-1].harga = hargaTemp
+		fmt.Println(hargaTemp)
+	}
+	fmt.Println("---------------------------")
+	fmt.Println("Stok Produk:")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&data[n-1].stok)
+	if data[n-1].stok == stokTemp {
+		data[n-1].stok = stokTemp
+	} else if data[n-1].stok == 0 {
+		data[n-1].stok = 0
+	}
+	fmt.Println("---------------------------")
+	fmt.Println("Data Ke-", n, "Berhasil Diedit")
+	showAllProduct(*data, x)
+
 }
 
 // -----> Find Data Function using Sequential Search Algorithm <----
@@ -293,12 +335,11 @@ func menuStart() {
 	fmt.Println("                 Developed By:                 ")
 	fmt.Println("                  Kelompok 1                   ")
 	fmt.Println("-----------------------------------------------")
-	fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 }
 
 func menuProcess() {
 	fmt.Println("|-----------------------------------------------|")
-	fmt.Println("|               M E N U   F I T U R             |")
+	fmt.Println("|               M E N U   U T A M A             |")
 	fmt.Println("|-----------------------------------------------|")
 	fmt.Println("1. Konfigurasi Data Produk")
 	fmt.Println("2. Pencatatan Transaksi")
@@ -307,7 +348,6 @@ func menuProcess() {
 }
 
 func menuEnd() {
-	fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("                Program Selesai                ")
 	fmt.Println("-----------------------------------------------")
@@ -325,11 +365,14 @@ func menuOptionsShowAllProduct() {
 
 func menuHeaderKonfigurasiDataProduk() {
 	fmt.Println("|---------------------------------|")
-	fmt.Println("| M E N U - P R O D U K - D A T A |")
+	fmt.Println("| K O N F I G U R A S I - D A T A |")
 	fmt.Println("|---------------------------------|")
 }
 
 func menuOptionsKonfigurasiDataProduk() {
+	fmt.Println("|---------------------------------|")
+	fmt.Println("|         C O O K - D A T A       |")
+	fmt.Println("|---------------------------------|")
 	fmt.Println("1. Tambah Data")
 	fmt.Println("2. Tampilkan Semua Data")
 	fmt.Println("3. Kembali ke Menu Utama")
