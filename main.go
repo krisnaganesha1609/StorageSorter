@@ -75,7 +75,7 @@ func main() {
 		if determinator == 1 {
 			konfigurasiDataProduk(&dataProduk, &nData)
 		} else if determinator == 2 {
-			pencatatanTransaksi(&dataTransaksi, &nTransaksi, dataProduk, nData)
+			pencatatanTransaksi(&dataTransaksi, &nTransaksi, &dataProduk, nData)
 		}
 	}
 	// End Program
@@ -113,7 +113,7 @@ func konfigurasiDataProduk(data *Data, n *int) {
 	fmt.Print("\033[H")
 }
 
-func pencatatanTransaksi(transaksi *CatatanTransaksi, nT *int, produk Data, nD int) {
+func pencatatanTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD int) {
 	var det int
 	menuHeaderPencatatanTransaksi()
 	menuOptionsPencatatanTransaksi()
@@ -138,7 +138,7 @@ func pencatatanTransaksi(transaksi *CatatanTransaksi, nT *int, produk Data, nD i
 	fmt.Print("\033[H")
 }
 
-func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk Data, nD int) {
+func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD int) {
 	var beli int
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
@@ -160,7 +160,7 @@ func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk Data, nD in
 	}
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
-	showAllProduct(produk, nD)
+	showAllProduct(*produk, nD)
 	menuHeaderInputDataProduk()
 	fmt.Println("Masukkan nomor produk yang dibeli:")
 	fmt.Print(">>>> ")
@@ -170,7 +170,7 @@ func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk Data, nD in
 	for beli <= 0 {
 		fmt.Print("\033[2J")
 		fmt.Print("\033[H")
-		showAllProduct(produk, nD)
+		showAllProduct(*produk, nD)
 		menuHeaderInputDataProduk()
 		fmt.Println("Produk yang dibeli tidak ditemukan/tidak boleh kosong! Mohon masukkan nomor produk yang dibeli: ")
 		fmt.Print(">>>> ")
@@ -203,6 +203,8 @@ func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk Data, nD in
 	}
 	transaksi[*nT].tanggalTransaksi = time.Now()
 	transaksi[*nT].subtotal = float64(transaksi[*nT].jumlahDibeli) * transaksi[*nT].barangTerjual.harga
+	produk[beli-1].stok = produk[beli-1].stok - transaksi[*nT].jumlahDibeli
+	transaksi[*nT].barangTerjual.stok = produk[beli-1].stok
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	menuHeaderInputDataProduk()
