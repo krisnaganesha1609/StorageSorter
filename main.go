@@ -1,10 +1,11 @@
 package main
 
-//Configure how to use os import to clear terminal everytime user hit "back to main menu" option
 import (
 	"fmt"
+	// time module/package untuk mendapatkan tipe data time.Time di struct 'Transaksi'
 	"time"
 
+	// third-party package untuk membuat tabel untuk CLI yang memudahkan pengguna untuk membaca data yang ditampilkan
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
 )
@@ -27,11 +28,13 @@ type Transaksi struct {
 	subtotal         float64
 }
 
-const MAXPRODUCT int = 1024
+const MAXPRODUCT int = 25
+
+const MAXTRANSACTION int = 1000
 
 type Data [MAXPRODUCT]Produk
 
-type Buku [MAXPRODUCT]Transaksi
+type CatatanTransaksi [MAXTRANSACTION]Transaksi
 
 //---------------------------------------------------------------
 
@@ -45,6 +48,12 @@ func main() {
 
 	// Variabel yang akan digunakan untuk membatasi iterasi ketika membaca data dan menampilkan data
 	var nData int
+
+	// Variabel yang akan dijadikan penyimpanan data transaksi
+	var dataTransaksi CatatanTransaksi
+
+	// Varabel yang akan digunakan untuk membatasi iterasi ketika membaca data transaksi dan menampilkan data transaksi
+	var nTransaksi int
 
 	// Start Menu
 	fmt.Print("\033[2J")
@@ -66,7 +75,7 @@ func main() {
 		if determinator == 1 {
 			konfigurasiDataProduk(&dataProduk, &nData)
 		} else if determinator == 2 {
-			pencatatanTransaksi()
+			pencatatanTransaksi(&dataTransaksi, &nTransaksi, dataProduk, nData)
 		}
 	}
 	// End Program
@@ -104,9 +113,104 @@ func konfigurasiDataProduk(data *Data, n *int) {
 	fmt.Print("\033[H")
 }
 
-// TODO: Buat Prosedur untuk Fitur Pencatatan Transaksi beserta logic programnya
-func pencatatanTransaksi() {
+func pencatatanTransaksi(transaksi *CatatanTransaksi, nT *int, produk Data, nD int) {
+	var det int
+	menuHeaderPencatatanTransaksi()
+	menuOptionsPencatatanTransaksi()
+	fmt.Println("Masukkan menu: ")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&det)
+	for det != 3 {
+		if det == 1 {
+			inputDataTransaksi(transaksi, nT, produk, nD)
+		} else if det == 2 {
+			showAllTransaction(*transaksi, *nT)
+		}
+		fmt.Print("\033[2J")
+		fmt.Print("\033[H")
+		menuHeaderKonfigurasiDataProduk()
+		menuOptionsKonfigurasiDataProduk()
+		fmt.Println("Masukkan menu: ")
+		fmt.Print(">>>> ")
+		fmt.Scanln(&det)
+	}
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+}
 
+func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk Data, nD int) {
+	var beli int
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	menuHeaderInputDataProduk()
+	fmt.Println("Nama Pembeli:")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&transaksi[*nT].pembeli)
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	for transaksi[*nT].pembeli == "" {
+		fmt.Print("\033[2J")
+		fmt.Print("\033[H")
+		menuHeaderInputDataProduk()
+		fmt.Println("Nama pembeli kosong! Mohon masukkan nama pembeli: ")
+		fmt.Print(">>>> ")
+		fmt.Scanln(&transaksi[*nT].pembeli)
+		fmt.Print("\033[2J")
+		fmt.Print("\033[H")
+	}
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	showAllProduct(produk, nD)
+	menuHeaderInputDataProduk()
+	fmt.Println("Masukkan nomor produk yang dibeli:")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&beli)
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	for beli <= 0 {
+		fmt.Print("\033[2J")
+		fmt.Print("\033[H")
+		showAllProduct(produk, nD)
+		menuHeaderInputDataProduk()
+		fmt.Println("Produk yang dibeli tidak ditemukan/tidak boleh kosong! Mohon masukkan nomor produk yang dibeli: ")
+		fmt.Print(">>>> ")
+		fmt.Scanln(&beli)
+		fmt.Print("\033[2J")
+		fmt.Print("\033[H")
+	}
+	transaksi[*nT].barangTerjual.namaProduk = produk[beli-1].namaProduk
+	transaksi[*nT].barangTerjual.merek = produk[beli-1].merek
+	transaksi[*nT].barangTerjual.jenis = produk[beli-1].jenis
+	transaksi[*nT].barangTerjual.harga = produk[beli-1].harga
+	transaksi[*nT].barangTerjual.stok = produk[beli-1].stok
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	menuHeaderInputDataProduk()
+	fmt.Println("Jumlah Pembelian:")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&transaksi[*nT].jumlahDibeli)
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	for transaksi[*nT].jumlahDibeli == 0 {
+		fmt.Print("\033[2J")
+		fmt.Print("\033[H")
+		menuHeaderInputDataProduk()
+		fmt.Println("Jumlah pembelian kosong! Mohon masukkan jumlah pembelian: ")
+		fmt.Print(">>>> ")
+		fmt.Scanln(&transaksi[*nT].jumlahDibeli)
+		fmt.Print("\033[2J")
+		fmt.Print("\033[H")
+	}
+	transaksi[*nT].tanggalTransaksi = time.Now()
+	transaksi[*nT].subtotal = float64(transaksi[*nT].jumlahDibeli) * transaksi[*nT].barangTerjual.harga
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	menuHeaderInputDataProduk()
+	fmt.Println("Transaksi Ke-", *nT+1, "Berhasil Diinput.")
+	*nT++
+	time.Sleep(3 * time.Second)
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
 }
 
 // Input data produk
@@ -230,6 +334,8 @@ func tampilSemuaDataProduk(data *Data, n *int) {
 			deleteProductData(data, n)
 		} else if det == 3 {
 			showSearchedProduct(*data, *n)
+		} else if det == 4 {
+			SortProduct(data, *n)
 		}
 	}
 	fmt.Print("\033[2J")
@@ -237,18 +343,18 @@ func tampilSemuaDataProduk(data *Data, n *int) {
 }
 
 func deleteProductData(data *Data, n *int) {
-	var x string
+	var x int
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	showAllProduct(*data, *n)
 	menuHeaderDeleteData()
-	fmt.Println("Masukkan nama/jenis/merek produk yang ingin dihapus secara lengkap: ")
+	fmt.Println("Masukkan nomor produk yang ingin dihapus: ")
 	fmt.Print(">>>> ")
 	fmt.Scanln(&x)
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
-	index := findSingleData(*data, *n, x)
-	if index == -1 {
+	// index := findSingleDataByString(*data, *n, x)
+	if x <= 0 {
 		fmt.Print("\033[2J")
 		fmt.Print("\033[H")
 		showAllProduct(*data, *n)
@@ -258,7 +364,7 @@ func deleteProductData(data *Data, n *int) {
 		fmt.Print("\033[2J")
 		fmt.Print("\033[H")
 	} else {
-		i := index
+		i := x - 1
 		for i <= *n-2 {
 			data[i] = data[i+1]
 			i++
@@ -293,6 +399,20 @@ func showAllProduct(data Data, n int) {
 	//tampilSemuaDataProduk(data, n)
 }
 
+func showAllTransaction(transaksi CatatanTransaksi, n int) {
+	fmt.Println()
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+	tbl := table.New("No.", "Tanggal Transaksi", "Nama Pembeli", "Nama Produk Yang Dibeli", "Jenis Produk Yang Dibeli", "Merek Produk Yang Dibeli", "Jumlah Dibeli", "Subtotal")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+	for i := 0; i < n; i++ {
+		tbl.AddRow(i+1, transaksi[i].tanggalTransaksi, transaksi[i].pembeli, transaksi[i].barangTerjual.namaProduk, transaksi[i].barangTerjual.jenis, transaksi[i].barangTerjual.merek, transaksi[i].jumlahDibeli, transaksi[i].subtotal)
+	}
+	tbl.Print()
+	fmt.Println()
+}
+
+// TODO: MASIH PERLU PERBAIKAN, PERLU MENAMPILKAN DATA SECARA MULTIPLE BUKAN SINGLE
 func showSearchedProduct(data Data, n int) {
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
@@ -302,7 +422,8 @@ func showSearchedProduct(data Data, n int) {
 	fmt.Println("Masukkan nama/jenis/merek produk yang ingin dicari secara lengkap: ")
 	fmt.Print(">>>> ")
 	fmt.Scanln(&x)
-	index := findSingleData(data, n, x)
+	// TODO: Nanti diperbaiki
+	index := findSingleDataByString(data, n, x)
 	fmt.Println()
 
 	fmt.Print("\033[2J")
@@ -451,9 +572,34 @@ func editProductData(data *Data, x int) {
 
 }
 
+func SortProduct(data *Data, n int) {
+	var det int
+	menuHeaderSortProduct()
+	menuOptionsUrutkanDataProduk()
+	for det != 7 {
+		fmt.Scan(&det)
+		if det == 1 {
+			sortByAscending(data, n, "nama")
+		} else if det == 2 {
+			sortByDescending(data, n, "nama")
+		} else if det == 3 {
+			sortByAscending(data, n, "harga")
+		} else if det == 4 {
+			sortByDescending(data, n, "harga")
+		} else if det == 5 {
+			sortByAscending(data, n, "stok")
+		} else if det == 6 {
+			sortByDescending(data, n, "stok")
+		}
+	}
+	fmt.Println("Data berhasil di urutkan")
+	showAllProduct(*data, n)
+}
+
 // -----> Find Data Function using Sequential Search Algorithm <----
 
-func findSingleData(data Data, n int, x string) int {
+// TODO: Perbaiki Function FindSingleData menjadi findMultipleData
+func findSingleDataByString(data Data, n int, x string) int {
 	var k int
 	var idx int = -1
 	for idx == -1 && k < n {
@@ -463,6 +609,155 @@ func findSingleData(data Data, n int, x string) int {
 		k++
 	}
 	return idx
+}
+
+// func findSingleDataByHarga(data Data, n int, x float64) int {
+// 	var k int
+// 	var idx int = -1
+// 	for idx == -1 && k < n {
+// 		if data[k].harga == x {
+// 			idx = k
+// 		}
+// 		k++
+// 	}
+// 	return idx
+// }
+
+// func findSingleDataByStok(data Data, n int, x int) int {
+// 	var k int
+// 	var idx int = -1
+// 	for idx == -1 && k < n {
+// 		if data[k].stok == x {
+// 			idx = k
+// 		}
+// 		k++
+// 	}
+// 	return idx
+// }
+
+// -----> Find Min Data  <-----
+
+func findMinByString(data Data, n, pass int) int {
+	var idx int = pass - 1
+	var k int = pass
+	for k < n {
+		if data[idx].namaProduk[0] > data[k].namaProduk[0] {
+			idx = k
+		} else if data[idx].namaProduk[0] == data[k].namaProduk[0] {
+			if data[idx].namaProduk[1] > data[k].namaProduk[1] {
+				idx = k
+			}
+		}
+		k++
+	}
+	return idx
+}
+
+func findMinByHarga(data Data, n, pass int) int {
+	var idx int = pass - 1
+	var k int = pass
+	for k < n {
+		if data[idx].harga > data[k].harga {
+			idx = k
+		}
+		k++
+	}
+	return idx
+}
+
+func findMinByStok(data Data, n, pass int) int {
+	var idx int = pass - 1
+	var k int = pass
+	for k < n {
+		if data[idx].stok > data[k].stok {
+			idx = k
+		}
+		k++
+	}
+	return idx
+}
+
+// -----> Find Max Data <------
+
+func findMaxByString(data Data, n, pass int) int {
+	var idx int = pass - 1
+	var k int = pass
+	for k < n {
+		if data[idx].namaProduk[0] < data[k].namaProduk[0] {
+			idx = k
+		} else if data[idx].namaProduk[0] == data[k].namaProduk[0] {
+			if data[idx].namaProduk[1] < data[k].namaProduk[1] {
+				idx = k
+			}
+		}
+		k++
+	}
+	return idx
+}
+
+func findMaxByHarga(data Data, n, pass int) int {
+	var idx int = pass - 1
+	var k int = pass
+	for k < n {
+		if data[idx].harga < data[k].harga {
+			idx = k
+		}
+		k++
+	}
+	return idx
+}
+
+func findMaxByStok(data Data, n, pass int) int {
+	var idx int = pass - 1
+	var k int = pass
+	for k < n {
+		if data[idx].stok < data[k].stok {
+			idx = k
+		}
+		k++
+	}
+	return idx
+}
+
+// -----> Selection Sort by String Order Ascending <-----
+
+func sortByAscending(data *Data, n int, det string) {
+	var pass, idx int
+	var temp Produk
+	pass = 1
+	for pass = 1; pass <= n-1; pass++ {
+		if det == "nama" {
+			idx = findMinByString(*data, n, pass)
+		} else if det == "harga" {
+			idx = findMinByHarga(*data, n, pass)
+		} else if det == "stok" {
+			idx = findMinByStok(*data, n, pass)
+		}
+
+		temp = data[idx]
+		data[idx] = data[pass-1]
+		data[pass-1] = temp
+	}
+}
+
+// -----> Selection Sort by String Order Descending <-----
+
+func sortByDescending(data *Data, n int, det string) {
+	var pass, idx int
+	var temp Produk
+	pass = 1
+	for pass = 1; pass <= n-1; pass++ {
+		if det == "nama" {
+			idx = findMaxByString(*data, n, pass)
+		} else if det == "harga" {
+			idx = findMaxByHarga(*data, n, pass)
+		} else if det == "stok" {
+			idx = findMaxByStok(*data, n, pass)
+		}
+		temp = data[idx]
+		data[idx] = data[pass-1]
+		data[pass-1] = temp
+	}
 }
 
 // -----> Menampilkan menu secara estetik pada CLI <----------
@@ -529,11 +824,37 @@ func menuHeaderInputDataProduk() {
 	fmt.Println(" ")
 }
 
+func menuHeaderPencatatanTransaksi() {
+	fmt.Println("-----------------------------------------------")
+	fmt.Println("\x1b[7;37m P E N C A T A T A N - T R A N S A K S I \x1b[0;37m")
+	fmt.Println("-----------------------------------------------")
+}
+
+func menuOptionsPencatatanTransaksi() {
+	fmt.Println(" ")
+	fmt.Println("1. Tambah Transaksi")
+	fmt.Println("2. Tampilkan Data Transaksi")
+	fmt.Println("3. Kembali ke Menu Utama")
+	fmt.Println(" ")
+}
+
 func menuOptionsKonfigurasiDataProduk() {
 	fmt.Println(" ")
 	fmt.Println("1. Tambah Data")
 	fmt.Println("2. Utilitas Data")
 	fmt.Println("3. Kembali ke Menu Utama")
+	fmt.Println(" ")
+}
+
+func menuOptionsUrutkanDataProduk() {
+	fmt.Println(" ")
+	fmt.Println("1. Urutkan Berdasarkan Nama Produk Secara Ascending")
+	fmt.Println("2. Urutkan Berdasarkan Nama Produk Secara Descending")
+	fmt.Println("3. Urutkan Berdasarkan Harga Secara Ascending")
+	fmt.Println("4. Urutkan Berdasarkan Harga Secara Descending")
+	fmt.Println("5. Urutkan Berdasarkan Stok Secara Ascending")
+	fmt.Println("6. Urutkan Berdasarkan Stok Secara Descending")
+	fmt.Println("7. Kembali ke Menu Utama")
 	fmt.Println(" ")
 }
 
@@ -554,6 +875,13 @@ func menuHeaderDeleteData() {
 func menuHeaderShowSearchedProduct() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m               C A R I - D A T A               \x1b[0;37m")
+	fmt.Println("-----------------------------------------------")
+	fmt.Println(" ")
+}
+
+func menuHeaderSortProduct() {
+	fmt.Println("-----------------------------------------------")
+	fmt.Println("\x1b[7;37m          U R U T K A N - D A T A              \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 	fmt.Println(" ")
 }
