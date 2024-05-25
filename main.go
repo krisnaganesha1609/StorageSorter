@@ -115,21 +115,21 @@ func konfigurasiDataProduk(data *Data, n *int) {
 
 func pencatatanTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD int) {
 	var det int
+	showAllTransaction(*transaksi, *nT)
 	menuHeaderPencatatanTransaksi()
 	menuOptionsPencatatanTransaksi()
 	fmt.Println("Masukkan menu: ")
 	fmt.Print(">>>> ")
 	fmt.Scanln(&det)
-	for det != 3 {
+	for det != 2 {
 		if det == 1 {
 			inputDataTransaksi(transaksi, nT, produk, nD)
-		} else if det == 2 {
-			showAllTransaction(*transaksi, *nT)
+			fmt.Print("\033[2J")
+			fmt.Print("\033[H")
 		}
-		fmt.Print("\033[2J")
-		fmt.Print("\033[H")
-		menuHeaderKonfigurasiDataProduk()
-		menuOptionsKonfigurasiDataProduk()
+		showAllTransaction(*transaksi, *nT)
+		menuHeaderPencatatanTransaksi()
+		menuOptionsPencatatanTransaksi()
 		fmt.Println("Masukkan menu: ")
 		fmt.Print(">>>> ")
 		fmt.Scanln(&det)
@@ -209,6 +209,7 @@ func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD i
 	fmt.Print("\033[H")
 	menuHeaderInputDataProduk()
 	fmt.Println("Transaksi Ke-", *nT+1, "Berhasil Diinput.")
+	fmt.Printf("Stok produk berkurang sebanyak %d buah\n", transaksi[*nT].jumlahDibeli)
 	*nT++
 	time.Sleep(3 * time.Second)
 	fmt.Print("\033[2J")
@@ -405,10 +406,10 @@ func showAllTransaction(transaksi CatatanTransaksi, n int) {
 	fmt.Println()
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
-	tbl := table.New("No.", "Tanggal Transaksi", "Nama Pembeli", "Nama Produk Yang Dibeli", "Jenis Produk Yang Dibeli", "Merek Produk Yang Dibeli", "Jumlah Dibeli", "Subtotal")
+	tbl := table.New("No.", "Tgl Transaksi", "Pembeli", "Nama Produk", "Jenis Produk", "Merek Produk", "Jumlah", "Subtotal")
 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 	for i := 0; i < n; i++ {
-		tbl.AddRow(i+1, transaksi[i].tanggalTransaksi, transaksi[i].pembeli, transaksi[i].barangTerjual.namaProduk, transaksi[i].barangTerjual.jenis, transaksi[i].barangTerjual.merek, transaksi[i].jumlahDibeli, transaksi[i].subtotal)
+		tbl.AddRow(i+1, transaksi[i].tanggalTransaksi.Format(time.UnixDate), transaksi[i].pembeli, transaksi[i].barangTerjual.namaProduk, transaksi[i].barangTerjual.jenis, transaksi[i].barangTerjual.merek, transaksi[i].jumlahDibeli, transaksi[i].subtotal)
 	}
 	tbl.Print()
 	fmt.Println()
@@ -578,24 +579,37 @@ func SortProduct(data *Data, n int) {
 	var det int
 	menuHeaderSortProduct()
 	menuOptionsUrutkanDataProduk()
-	for det != 7 {
-		fmt.Scan(&det)
-		if det == 1 {
-			sortByAscending(data, n, "nama")
-		} else if det == 2 {
-			sortByDescending(data, n, "nama")
-		} else if det == 3 {
-			sortByAscending(data, n, "harga")
-		} else if det == 4 {
-			sortByDescending(data, n, "harga")
-		} else if det == 5 {
-			sortByAscending(data, n, "stok")
-		} else if det == 6 {
-			sortByDescending(data, n, "stok")
-		}
+	fmt.Scan(&det)
+	if det == 1 {
+		sortByAscending(data, n, "nama")
+		fmt.Println("Data berhasil di urutkan")
+		showAllProduct(*data, n)
+	} else if det == 2 {
+		sortByDescending(data, n, "nama")
+		fmt.Println("Data berhasil di urutkan")
+		showAllProduct(*data, n)
+	} else if det == 3 {
+		sortByAscending(data, n, "harga")
+		fmt.Println("Data berhasil di urutkan")
+		showAllProduct(*data, n)
+	} else if det == 4 {
+		sortByDescending(data, n, "harga")
+		fmt.Println("Data berhasil di urutkan")
+		showAllProduct(*data, n)
+	} else if det == 5 {
+		sortByAscending(data, n, "stok")
+		fmt.Println("Data berhasil di urutkan")
+		showAllProduct(*data, n)
+	} else if det == 6 {
+		sortByDescending(data, n, "stok")
+		fmt.Println("Data berhasil di urutkan")
+		showAllProduct(*data, n)
+	} else if det == 7 {
+
+	} else {
+		fmt.Println("Mohon masukkan pengurutan data yang benar!")
 	}
-	fmt.Println("Data berhasil di urutkan")
-	showAllProduct(*data, n)
+
 }
 
 // -----> Find Data Function using Sequential Search Algorithm <----
@@ -727,7 +741,7 @@ func sortByAscending(data *Data, n int, det string) {
 	var pass, idx int
 	var temp Produk
 	pass = 1
-	for pass = 1; pass <= n-1; pass++ {
+	for pass <= n-1 {
 		if det == "nama" {
 			idx = findMinByString(*data, n, pass)
 		} else if det == "harga" {
@@ -736,9 +750,10 @@ func sortByAscending(data *Data, n int, det string) {
 			idx = findMinByStok(*data, n, pass)
 		}
 
-		temp = data[idx]
-		data[idx] = data[pass-1]
-		data[pass-1] = temp
+		temp = data[pass-1]
+		data[pass-1] = data[idx]
+		data[idx] = temp
+		pass++
 	}
 }
 
@@ -748,7 +763,7 @@ func sortByDescending(data *Data, n int, det string) {
 	var pass, idx int
 	var temp Produk
 	pass = 1
-	for pass = 1; pass <= n-1; pass++ {
+	for pass <= n-1 {
 		if det == "nama" {
 			idx = findMaxByString(*data, n, pass)
 		} else if det == "harga" {
@@ -756,9 +771,10 @@ func sortByDescending(data *Data, n int, det string) {
 		} else if det == "stok" {
 			idx = findMaxByStok(*data, n, pass)
 		}
-		temp = data[idx]
-		data[idx] = data[pass-1]
-		data[pass-1] = temp
+		temp = data[pass-1]
+		data[pass-1] = data[idx]
+		data[idx] = temp
+		pass++
 	}
 }
 
@@ -835,8 +851,7 @@ func menuHeaderPencatatanTransaksi() {
 func menuOptionsPencatatanTransaksi() {
 	fmt.Println(" ")
 	fmt.Println("1. Tambah Transaksi")
-	fmt.Println("2. Tampilkan Data Transaksi")
-	fmt.Println("3. Kembali ke Menu Utama")
+	fmt.Println("2. Kembali ke Menu Utama")
 	fmt.Println(" ")
 }
 
