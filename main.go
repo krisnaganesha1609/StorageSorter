@@ -4,6 +4,8 @@ import (
 	"fmt"
 	// time module/package untuk mendapatkan tipe data time.Time di struct 'Transaksi'
 	"time"
+	// strings module/package untuk menambah akurasi ketika melakukan pencarian data
+	"strings"
 
 	// third-party package untuk membuat tabel untuk CLI yang memudahkan pengguna untuk membaca data yang ditampilkan
 	"github.com/fatih/color"
@@ -113,6 +115,7 @@ func konfigurasiDataProduk(data *Data, n *int) {
 	fmt.Print("\033[H")
 }
 
+// TODO: Apakah perlu menambahkan fitur cari data dan sorting data di pencatatanTransaksi?
 func pencatatanTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD int) {
 	var det int
 	showAllTransaction(*transaksi, *nT)
@@ -318,8 +321,6 @@ func inputDataProduk(data *Data, n *int) {
 	fmt.Print("\033[H")
 }
 
-//TODO: Buat Prosedur dan Function untuk Sub-Menu dari Konfigurasi Data Produk
-
 func tampilSemuaDataProduk(data *Data, n *int) {
 	var det int
 	fmt.Print("\033[2J")
@@ -425,8 +426,8 @@ func showSearchedProduct(data Data, n int) {
 	fmt.Println("Masukkan nama/jenis/merek produk yang ingin dicari secara lengkap: ")
 	fmt.Print(">>>> ")
 	fmt.Scanln(&x)
-	// TODO: Nanti diperbaiki
-	index := findSingleDataByString(data, n, x)
+	// TODO: Sudah diperbaiki
+	// index := findSingleDataByString(data, n, x)
 	fmt.Println()
 
 	fmt.Print("\033[2J")
@@ -435,13 +436,24 @@ func showSearchedProduct(data Data, n int) {
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
 	tbl := table.New("No.", "Nama Produk", "Merek Produk", "Jenis Produk", "Harga Produk", "Stok Produk")
 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+	var k int
+	var index int = -1
+	for k < n {
+		if strings.HasPrefix(strings.ToLower(data[k].namaProduk), strings.ToLower(x)) || strings.HasPrefix(strings.ToLower(data[k].merek), strings.ToLower(x)) || strings.HasPrefix(strings.ToLower(data[k].jenis), strings.ToLower(x)) {
+			index = k
+			tbl.AddRow(index+1, data[index].namaProduk, data[index].merek, data[index].jenis, data[index].harga, data[index].stok)
+		}
+		k++
+	}
+	if index != -1 {
+		fmt.Println("Data ditemukan!")
+		tbl.Print()
+	} else {
+		fmt.Println("Data tidak ditemukan!")
+	}
 
-	tbl.AddRow(index+1, data[index].namaProduk, data[index].merek, data[index].jenis, data[index].harga, data[index].stok)
-
-	tbl.Print()
 	fmt.Println()
 }
-
 func showSelectedProduct(data Data, n int) {
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
@@ -579,7 +591,9 @@ func SortProduct(data *Data, n int) {
 	var det int
 	menuHeaderSortProduct()
 	menuOptionsUrutkanDataProduk()
-	fmt.Scan(&det)
+	fmt.Println("Masukkan menu: ")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&det)
 	if det == 1 {
 		sortByAscending(data, n, "nama")
 		fmt.Println("Data berhasil di urutkan")
@@ -614,18 +628,30 @@ func SortProduct(data *Data, n int) {
 
 // -----> Find Data Function using Sequential Search Algorithm <----
 
-// TODO: Perbaiki Function FindSingleData menjadi findMultipleData
-func findSingleDataByString(data Data, n int, x string) int {
-	var k int
-	var idx int = -1
-	for idx == -1 && k < n {
-		if data[k].namaProduk == x || data[k].merek == x || data[k].jenis == x {
-			idx = k
-		}
-		k++
-	}
-	return idx
-}
+// TODO: Sepertinya func yang di comment ini tidak akan terpakai lagi, ntar dihapus aja (kalau udah aman :v)
+// func findSingleDataByString(data Data, n int, x string) int {
+// 	var k int
+// 	var idx int = -1
+// 	for idx == -1 && k < n {
+// 		if data[k].namaProduk == x || data[k].merek == x || data[k].jenis == x {
+// 			idx = k
+// 		}
+// 		k++
+// 	}
+// 	return idx
+// }
+
+// func findMultipleDataByString(data Data, n int, x string) {
+// 	var k int
+// 	var idx int = -1
+// 	for k < n {
+// 		if data[k].namaProduk[0] == x[0] || data[k].merek[0] == x[0] || data[k].jenis[0] == x[0] {
+// 			idx = k
+// 		}
+// 		k++
+// 	}
+
+// }
 
 // func findSingleDataByHarga(data Data, n int, x float64) int {
 // 	var k int
@@ -662,6 +688,10 @@ func findMinByString(data Data, n, pass int) int {
 		} else if data[idx].namaProduk[0] == data[k].namaProduk[0] {
 			if data[idx].namaProduk[1] > data[k].namaProduk[1] {
 				idx = k
+			} else if data[idx].namaProduk[1] == data[k].namaProduk[1] {
+				if data[idx].namaProduk[2] > data[k].namaProduk[2] {
+					idx = k
+				}
 			}
 		}
 		k++
@@ -704,6 +734,10 @@ func findMaxByString(data Data, n, pass int) int {
 		} else if data[idx].namaProduk[0] == data[k].namaProduk[0] {
 			if data[idx].namaProduk[1] < data[k].namaProduk[1] {
 				idx = k
+			} else if data[idx].namaProduk[1] == data[k].namaProduk[1] {
+				if data[idx].namaProduk[2] < data[k].namaProduk[2] {
+					idx = k
+				}
 			}
 		}
 		k++
