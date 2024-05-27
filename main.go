@@ -211,7 +211,7 @@ func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD i
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	menuHeaderInputDataProduk()
-	fmt.Println("Transaksi Ke-", *nT+1, "Berhasil Diinput.")
+	fmt.Println("Transaksi Ke -", *nT+1, "Berhasil Diinput.")
 	fmt.Printf("Stok produk berkurang sebanyak %d buah\n", transaksi[*nT].jumlahDibeli)
 	*nT++
 	time.Sleep(3 * time.Second)
@@ -314,7 +314,7 @@ func inputDataProduk(data *Data, n *int) {
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	menuHeaderInputDataProduk()
-	fmt.Println("Data Ke-", *n+1, "Berhasil Diinput.")
+	fmt.Println("Data Ke -", *n+1, "Berhasil Diinput.")
 	*n++
 	time.Sleep(3 * time.Second)
 	fmt.Print("\033[2J")
@@ -446,15 +446,20 @@ func showSearchedProduct(data Data, n int) {
 		k++
 	}
 	if index != -1 {
+		fmt.Println()
 		fmt.Println("Data ditemukan!")
+		fmt.Println()
 		tbl.Print()
 	} else {
+		fmt.Println()
 		fmt.Println("Data tidak ditemukan!")
+		showAllProduct(data, n)
 	}
 
 	fmt.Println()
 }
 func showSelectedProduct(data Data, n int) {
+	fmt.Println()
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
 	tbl := table.New("No.", "Nama Produk", "Merek Produk", "Jenis Produk", "Harga Produk", "Stok Produk")
@@ -580,7 +585,7 @@ func editProductData(data *Data, x int) {
 	fmt.Print("\033[H")
 	showSelectedProduct(*data, n)
 	menuHeaderEditData()
-	fmt.Println("Data Ke-", n, "Berhasil Diedit")
+	fmt.Println("Data Ke -", n, "Berhasil Diedit")
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	showAllProduct(*data, x)
@@ -589,33 +594,56 @@ func editProductData(data *Data, x int) {
 
 func SortProduct(data *Data, n int) {
 	var det int
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	showAllProduct(*data, n)
 	menuHeaderSortProduct()
 	menuOptionsUrutkanDataProduk()
 	fmt.Println("Masukkan menu: ")
 	fmt.Print(">>>> ")
 	fmt.Scanln(&det)
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
 	if det == 1 {
 		sortByAscending(data, n, "nama")
+		showAllProduct(*data, n)
+		menuHeaderSortProduct()
+		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		showAllProduct(*data, n)
 	} else if det == 2 {
 		sortByDescending(data, n, "nama")
+		showAllProduct(*data, n)
+		menuHeaderSortProduct()
+		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		showAllProduct(*data, n)
 	} else if det == 3 {
 		sortByAscending(data, n, "harga")
+		showAllProduct(*data, n)
+		menuHeaderSortProduct()
+		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		showAllProduct(*data, n)
 	} else if det == 4 {
 		sortByDescending(data, n, "harga")
+		showAllProduct(*data, n)
+		menuHeaderSortProduct()
+		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		showAllProduct(*data, n)
 	} else if det == 5 {
 		sortByAscending(data, n, "stok")
+		showAllProduct(*data, n)
+		menuHeaderSortProduct()
+		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		showAllProduct(*data, n)
 	} else if det == 6 {
 		sortByDescending(data, n, "stok")
+		showAllProduct(*data, n)
+		menuHeaderSortProduct()
+		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		showAllProduct(*data, n)
 	} else if det == 7 {
@@ -623,7 +651,9 @@ func SortProduct(data *Data, n int) {
 	} else {
 		fmt.Println("Mohon masukkan pengurutan data yang benar!")
 	}
-
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	showAllProduct(*data, n)
 }
 
 // -----> Find Data Function using Sequential Search Algorithm <----
@@ -878,7 +908,7 @@ func menuHeaderInputDataProduk() {
 
 func menuHeaderPencatatanTransaksi() {
 	fmt.Println("-----------------------------------------------")
-	fmt.Println("\x1b[7;37m P E N C A T A T A N - T R A N S A K S I \x1b[0;37m")
+	fmt.Println("\x1b[7;37m    P E N C A T A T A N - T R A N S A K S I    \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 }
 
@@ -932,7 +962,7 @@ func menuHeaderShowSearchedProduct() {
 
 func menuHeaderSortProduct() {
 	fmt.Println("-----------------------------------------------")
-	fmt.Println("\x1b[7;37m          U R U T K A N - D A T A              \x1b[0;37m")
+	fmt.Println("\x1b[7;37m            U R U T K A N - D A T A            \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 	fmt.Println(" ")
 }
