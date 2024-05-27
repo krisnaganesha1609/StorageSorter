@@ -1031,7 +1031,7 @@ Header Hapus Data.
 */
 func menuHeaderDeleteData() {
 	fmt.Println("-----------------------------------------------")
-	fmt.Println("\x1b[7;37m              H A P U S - D A T A              \x1b[7;37m")
+	fmt.Println("\x1b[7;37m              H A P U S - D A T A              \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 	fmt.Println(" ")
 }
