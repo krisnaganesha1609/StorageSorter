@@ -6,14 +6,14 @@ import (
 	"time"
 	// strings module/package untuk menambah akurasi ketika melakukan pencarian data
 	"strings"
-
 	// third-party package untuk membuat tabel untuk CLI yang memudahkan pengguna untuk membaca data yang ditampilkan
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
 )
 
-// ----> Variabel Global <-----
-
+/*
+Variabel Global
+*/
 type Produk struct {
 	namaProduk string
 	merek      string
@@ -31,16 +31,14 @@ type Transaksi struct {
 }
 
 const MAXPRODUCT int = 25
-
 const MAXTRANSACTION int = 1000
 
 type Data [MAXPRODUCT]Produk
-
 type CatatanTransaksi [MAXTRANSACTION]Transaksi
 
-//---------------------------------------------------------------
-
-// ----> Main Program <----
+/*
+Program Utama
+*/
 func main() {
 	// Variabel untuk menentukan pilihan menu dan mencegah infinite-loop
 	var determinator int
@@ -75,19 +73,24 @@ func main() {
 		fmt.Print("\033[2J")
 		fmt.Print("\033[H")
 		if determinator == 1 {
+			// Jalankan konfigurasi data produk
 			konfigurasiDataProduk(&dataProduk, &nData)
 		} else if determinator == 2 {
+			// Jalankan pencatatan transaksi
 			pencatatanTransaksi(&dataTransaksi, &nTransaksi, &dataProduk, nData)
 		}
 	}
-	// End Program
+	// Akhiri program
 	menuEnd()
 	time.Sleep(3 * time.Second)
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 }
 
-// ----> Prosedur Untuk Menu Utama <----
+/*
+Prosedur untuk Menu pertama, yaitu
+Konfigurasi Data Produk.
+*/
 func konfigurasiDataProduk(data *Data, n *int) {
 	var det int
 	menuHeaderKonfigurasiDataProduk()
@@ -115,7 +118,10 @@ func konfigurasiDataProduk(data *Data, n *int) {
 	fmt.Print("\033[H")
 }
 
-// TODO: Apakah perlu menambahkan fitur cari data dan sorting data di pencatatanTransaksi?
+/*
+Prosedur untuk Menu kedua, yaitu
+Pencatatan transaksi.
+*/
 func pencatatanTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD int) {
 	var det int
 	showAllTransaction(*transaksi, *nT)
@@ -141,6 +147,11 @@ func pencatatanTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD 
 	fmt.Print("\033[H")
 }
 
+/*
+Prosedur untuk menu pertama di dalam
+Pencatatan transaksi, yaitu
+Input Data Transaksi.
+*/
 func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD int) {
 	var beli int
 	fmt.Print("\033[2J")
@@ -219,7 +230,11 @@ func inputDataTransaksi(transaksi *CatatanTransaksi, nT *int, produk *Data, nD i
 	fmt.Print("\033[H")
 }
 
-// Input data produk
+/*
+Prosedur untuk menu pertama di dalam
+Konfigurasi Data Produk, yaitu
+Tambah Data.
+*/
 func inputDataProduk(data *Data, n *int) {
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
@@ -321,6 +336,18 @@ func inputDataProduk(data *Data, n *int) {
 	fmt.Print("\033[H")
 }
 
+/*
+Prosedur untuk menu kedua di dalam
+Konfigurasi Data Produk, yaitu
+Utilitas Data.
+
+Sebelumnya kami menggunakan menu kedua
+ini untuk menampilkan semua data
+yang tersedia, tetapi semenjak penamaan
+nya tidak terlalu sesuai dengan aslinya,
+kami ubah yang sebelumnya "Tampilkan Semua
+Data Produk" menjadi "Utilitas Data".
+*/
 func tampilSemuaDataProduk(data *Data, n *int) {
 	var det int
 	fmt.Print("\033[2J")
@@ -346,6 +373,10 @@ func tampilSemuaDataProduk(data *Data, n *int) {
 	fmt.Print("\033[H")
 }
 
+/*
+Prosedur untuk menu kedua di dalam
+Utilitas Data, yaitu Penghapusan Data.
+*/
 func deleteProductData(data *Data, n *int) {
 	var x int
 	fmt.Print("\033[2J")
@@ -357,7 +388,6 @@ func deleteProductData(data *Data, n *int) {
 	fmt.Scanln(&x)
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
-	// index := findSingleDataByString(*data, *n, x)
 	if x <= 0 {
 		fmt.Print("\033[2J")
 		fmt.Print("\033[H")
@@ -386,9 +416,17 @@ func deleteProductData(data *Data, n *int) {
 	showAllProduct(*data, *n)
 }
 
-// Tampilkan data
-// TODO: need a better placement for the interface header
-// TODO_2: is calling tampilSemuaDataProduk() is necessary?
+/*
+Prosedur untuk menu kedua di dalam
+Utilitas Data, yaitu menampilkan semua
+tabel data yang sudah masuk di atas header.
+Dipakai saat menampilkan menu:
+- Edit data
+- Hapus data
+- Cari data
+- Urutkan data
+- Tambah transaksi
+*/
 func showAllProduct(data Data, n int) {
 	fmt.Println()
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
@@ -400,9 +438,15 @@ func showAllProduct(data Data, n int) {
 	}
 	tbl.Print()
 	fmt.Println()
-	//tampilSemuaDataProduk(data, n)
 }
 
+/*
+Prosedur di dalam Pencatatan Transaksi,
+yaitu menampilkan semua transaksi data yang
+sudah masuk di atas header.
+Dipakai saat menampilkan menu:
+- Pencatatan Transaksi
+*/
 func showAllTransaction(transaksi CatatanTransaksi, n int) {
 	fmt.Println()
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
@@ -416,7 +460,13 @@ func showAllTransaction(transaksi CatatanTransaksi, n int) {
 	fmt.Println()
 }
 
-// TODO: MASIH PERLU PERBAIKAN, PERLU MENAMPILKAN DATA SECARA MULTIPLE BUKAN SINGLE
+/*
+Prosedur untuk menu ketiga di dalam
+Utilitas Data, yaitu menampilkan transaksi data
+yang dicari berdasarkan kata kunci yang di masukkan.
+Dipakai saat menampilkan menu:
+- Cari Data
+*/
 func showSearchedProduct(data Data, n int) {
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
@@ -426,10 +476,7 @@ func showSearchedProduct(data Data, n int) {
 	fmt.Println("Masukkan nama/jenis/merek produk yang ingin dicari secara lengkap: ")
 	fmt.Print(">>>> ")
 	fmt.Scanln(&x)
-	// TODO: Sudah diperbaiki
-	// index := findSingleDataByString(data, n, x)
 	fmt.Println()
-
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
@@ -455,9 +502,16 @@ func showSearchedProduct(data Data, n int) {
 		fmt.Println("Data tidak ditemukan!")
 		showAllProduct(data, n)
 	}
-
 	fmt.Println()
 }
+
+/*
+Prosedur untuk menu pertama di dalam
+Utilitas Data, yaitu menampilkan transaksi data
+yang lagi di edit dengan tabel yang ingin di edit.
+Dipakai saat menampilkan menu:
+- Edit Data
+*/
 func showSelectedProduct(data Data, n int) {
 	fmt.Println()
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
@@ -471,17 +525,10 @@ func showSelectedProduct(data Data, n int) {
 	fmt.Println()
 }
 
-// Edit Data
 /*
- * TODO: asumsi user mengira index 0 dari data adalah Data pertama
- * atau 1, akan akan aneh jika user mengedit data 1 dan yang teredit
- * menjadi data kedua.
- * TODO_2: asumsi user adalah tinkerer dan mencoba untuk input 0 untuk
- * select kolom data, kita buat user untuk input ulang dengan benar.
- * extra untuk mengecek apakah user meng-select kolom data lebih dari
- * MAXPRODUCT.
- * TODO_3: do we need to use by-pointers for the variables?
- */
+Prosedur untuk menu pertama di dalam
+Utilitas Data, yaitu Edit Data.
+*/
 func editProductData(data *Data, x int) {
 	var n int
 	var namaTemp, merekTemp, jenisTemp string
@@ -656,59 +703,11 @@ func SortProduct(data *Data, n int) {
 	showAllProduct(*data, n)
 }
 
-// -----> Find Data Function using Sequential Search Algorithm <----
-
-// TODO: Sepertinya func yang di comment ini tidak akan terpakai lagi, ntar dihapus aja (kalau udah aman :v)
-// func findSingleDataByString(data Data, n int, x string) int {
-// 	var k int
-// 	var idx int = -1
-// 	for idx == -1 && k < n {
-// 		if data[k].namaProduk == x || data[k].merek == x || data[k].jenis == x {
-// 			idx = k
-// 		}
-// 		k++
-// 	}
-// 	return idx
-// }
-
-// func findMultipleDataByString(data Data, n int, x string) {
-// 	var k int
-// 	var idx int = -1
-// 	for k < n {
-// 		if data[k].namaProduk[0] == x[0] || data[k].merek[0] == x[0] || data[k].jenis[0] == x[0] {
-// 			idx = k
-// 		}
-// 		k++
-// 	}
-
-// }
-
-// func findSingleDataByHarga(data Data, n int, x float64) int {
-// 	var k int
-// 	var idx int = -1
-// 	for idx == -1 && k < n {
-// 		if data[k].harga == x {
-// 			idx = k
-// 		}
-// 		k++
-// 	}
-// 	return idx
-// }
-
-// func findSingleDataByStok(data Data, n int, x int) int {
-// 	var k int
-// 	var idx int = -1
-// 	for idx == -1 && k < n {
-// 		if data[k].stok == x {
-// 			idx = k
-// 		}
-// 		k++
-// 	}
-// 	return idx
-// }
-
-// -----> Find Min Data  <-----
-
+/*
+Prosedur untuk menu ke-tiga dan empat di dalam
+Utilitas Data, yaitu Cari Data & Urutkan Data.
+Berdasarkan nama produk, Ascending.
+*/
 func findMinByString(data Data, n, pass int) int {
 	var idx int = pass - 1
 	var k int = pass
@@ -729,6 +728,11 @@ func findMinByString(data Data, n, pass int) int {
 	return idx
 }
 
+/*
+Prosedur untuk menu ke-tiga dan empat di dalam
+Utilitas Data, yaitu Cari Data & Urutkan Data.
+Berdasarkan harga, Ascending.
+*/
 func findMinByHarga(data Data, n, pass int) int {
 	var idx int = pass - 1
 	var k int = pass
@@ -741,6 +745,11 @@ func findMinByHarga(data Data, n, pass int) int {
 	return idx
 }
 
+/*
+Prosedur untuk menu ke-tiga dan empat di dalam
+Utilitas Data, yaitu Cari Data & Urutkan Data.
+Berdasarkan stok tersedia, Ascending.
+*/
 func findMinByStok(data Data, n, pass int) int {
 	var idx int = pass - 1
 	var k int = pass
@@ -753,8 +762,11 @@ func findMinByStok(data Data, n, pass int) int {
 	return idx
 }
 
-// -----> Find Max Data <------
-
+/*
+Prosedur untuk menu ke-tiga dan empat di dalam
+Utilitas Data, yaitu Cari Data & Urutkan Data.
+Berdasarkan nama produk, Descending.
+*/
 func findMaxByString(data Data, n, pass int) int {
 	var idx int = pass - 1
 	var k int = pass
@@ -775,6 +787,11 @@ func findMaxByString(data Data, n, pass int) int {
 	return idx
 }
 
+/*
+Prosedur untuk menu ke-tiga dan empat di dalam
+Utilitas Data, yaitu Cari Data & Urutkan Data.
+Berdasarkan harga, Descending.
+*/
 func findMaxByHarga(data Data, n, pass int) int {
 	var idx int = pass - 1
 	var k int = pass
@@ -787,6 +804,11 @@ func findMaxByHarga(data Data, n, pass int) int {
 	return idx
 }
 
+/*
+Prosedur untuk menu ke-tiga dan empat di dalam
+Utilitas Data, yaitu Cari Data & Urutkan Data.
+Berdasarkan stok tersedia, Descending.
+*/
 func findMaxByStok(data Data, n, pass int) int {
 	var idx int = pass - 1
 	var k int = pass
@@ -799,8 +821,11 @@ func findMaxByStok(data Data, n, pass int) int {
 	return idx
 }
 
-// -----> Selection Sort by String Order Ascending <-----
-
+/*
+Prosedur untuk empat di dalam
+Utilitas Data, yaitu Urutkan Data.
+Logic utama, Ascending.
+*/
 func sortByAscending(data *Data, n int, det string) {
 	var pass, idx int
 	var temp Produk
@@ -821,8 +846,11 @@ func sortByAscending(data *Data, n int, det string) {
 	}
 }
 
-// -----> Selection Sort by String Order Descending <-----
-
+/*
+Prosedur untuk empat di dalam
+Utilitas Data, yaitu Urutkan Data.
+Logic utama, Descending.
+*/
 func sortByDescending(data *Data, n int, det string) {
 	var pass, idx int
 	var temp Produk
@@ -842,7 +870,10 @@ func sortByDescending(data *Data, n int, det string) {
 	}
 }
 
-// -----> Menampilkan menu secara estetik pada CLI <----------
+/*
+Printlines estetik pada program.
+Program startup.
+*/
 func menuStart() {
 	fmt.Println(" ____  _                                ")
 	fmt.Println("/ ___|| |_ ___  _ __ __ _  __ _  ___    ")
@@ -857,12 +888,20 @@ func menuStart() {
 	fmt.Println("|____/ \\___/|_|   \\__\\___|_|           Kelompok 1")
 }
 
+/*
+Printlines estetik pada program.
+Header Menu Utama.
+*/
 func menuProcess() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m               M E N U - U T A M A             \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 }
 
+/*
+Printlines estetik pada program.
+Opsi Menu Utama.
+*/
 func menuOptionsProcess() {
 	fmt.Println(" ")
 	fmt.Println("1. Konfigurasi Data Produk")
@@ -871,18 +910,30 @@ func menuOptionsProcess() {
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Program shut down.
+*/
 func menuEnd() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m            S A M P A I - J U M P A            \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 }
 
+/*
+Printlines estetik pada program.
+Header Utlitas Data.
+*/
 func menuHeaderTampilSemuaDataProduk() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m           U T I L I T A S - D A T A           \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 }
 
+/*
+Printlines estetik pada program.
+Opsi Utilitas Data.
+*/
 func menuOptionsTampilSemuaDataProduk() {
 	fmt.Println(" ")
 	fmt.Println("1. Edit Data")
@@ -893,12 +944,20 @@ func menuOptionsTampilSemuaDataProduk() {
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Header Konfigurasi Data Produk.
+*/
 func menuHeaderKonfigurasiDataProduk() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m K O N F I G U R A S I - D A T A - P R O D U K \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 }
 
+/*
+Printlines estetik pada program.
+Header Pengisisan Data.
+*/
 func menuHeaderInputDataProduk() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m          P E N G I S I A N - D A T A          \x1b[0;37m")
@@ -906,12 +965,20 @@ func menuHeaderInputDataProduk() {
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Header Pencatatan Transaksi
+*/
 func menuHeaderPencatatanTransaksi() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m    P E N C A T A T A N - T R A N S A K S I    \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 }
 
+/*
+Printlines estetik pada program.
+Opsi Pencatatan Transaksi.
+*/
 func menuOptionsPencatatanTransaksi() {
 	fmt.Println(" ")
 	fmt.Println("1. Tambah Transaksi")
@@ -919,6 +986,10 @@ func menuOptionsPencatatanTransaksi() {
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Opsi Konfigurasi Data Produk.
+*/
 func menuOptionsKonfigurasiDataProduk() {
 	fmt.Println(" ")
 	fmt.Println("1. Tambah Data")
@@ -927,6 +998,10 @@ func menuOptionsKonfigurasiDataProduk() {
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Opsi Urutkan Data.
+*/
 func menuOptionsUrutkanDataProduk() {
 	fmt.Println(" ")
 	fmt.Println("1. Urutkan Berdasarkan Nama Produk Secara Ascending")
@@ -939,6 +1014,10 @@ func menuOptionsUrutkanDataProduk() {
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Header Edit Data.
+*/
 func menuHeaderEditData() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m               E D I T - D A T A               \x1b[0;37m")
@@ -946,13 +1025,21 @@ func menuHeaderEditData() {
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Header Hapus Data.
+*/
 func menuHeaderDeleteData() {
 	fmt.Println("-----------------------------------------------")
-	fmt.Println("\x1b[7;37m             D E L E T E - D A T A             \x1b[0;37m")
+	fmt.Println("\x1b[7;37m              H A P U S - D A T A              \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Header Cari Data.
+*/
 func menuHeaderShowSearchedProduct() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m               C A R I - D A T A               \x1b[0;37m")
@@ -960,6 +1047,10 @@ func menuHeaderShowSearchedProduct() {
 	fmt.Println(" ")
 }
 
+/*
+Printlines estetik pada program.
+Header Urutkan Data.
+*/
 func menuHeaderSortProduct() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m            U R U T K A N - D A T A            \x1b[0;37m")
