@@ -55,6 +55,9 @@ func main() {
 	// Varabel yang akan digunakan untuk membatasi iterasi ketika membaca data transaksi dan menampilkan data transaksi
 	var nTransaksi int
 
+	// Variabel untuk mendeteksi apakah data sudah terurut atau belum
+	var isSorted string
+
 	// Start Menu
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
@@ -74,7 +77,7 @@ func main() {
 		fmt.Print("\033[H")
 		if determinator == 1 {
 			// Jalankan konfigurasi data produk
-			konfigurasiDataProduk(&dataProduk, &nData)
+			konfigurasiDataProduk(&dataProduk, &nData, &isSorted)
 		} else if determinator == 2 {
 			// Jalankan pencatatan transaksi
 			pencatatanTransaksi(&dataTransaksi, &nTransaksi, &dataProduk, nData)
@@ -91,7 +94,7 @@ func main() {
 Prosedur untuk Menu pertama, yaitu
 Konfigurasi Data Produk.
 */
-func konfigurasiDataProduk(data *Data, n *int) {
+func konfigurasiDataProduk(data *Data, n *int, isSorted *string) {
 	var det int
 	menuHeaderKonfigurasiDataProduk()
 	menuOptionsKonfigurasiDataProduk()
@@ -104,7 +107,7 @@ func konfigurasiDataProduk(data *Data, n *int) {
 		} else if det == 1 && *n >= MAXPRODUCT {
 			fmt.Println("Memori telah habis!")
 		} else if det == 2 {
-			tampilSemuaDataProduk(data, n)
+			tampilSemuaDataProduk(data, n, isSorted)
 		}
 		fmt.Print("\033[2J")
 		fmt.Print("\033[H")
@@ -348,7 +351,7 @@ nya tidak terlalu sesuai dengan aslinya,
 kami ubah yang sebelumnya "Tampilkan Semua
 Data Produk" menjadi "Utilitas Data".
 */
-func tampilSemuaDataProduk(data *Data, n *int) {
+func tampilSemuaDataProduk(data *Data, n *int, isSorted *string) {
 	var det int
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
@@ -364,9 +367,26 @@ func tampilSemuaDataProduk(data *Data, n *int) {
 		} else if det == 2 {
 			deleteProductData(data, n)
 		} else if det == 3 {
-			showSearchedProduct(*data, *n)
+			if *isSorted != "" {
+				var det2 int
+				fmt.Println("1. Cari Berdasarkan Harga")
+				fmt.Println("2. Cari Berdasarkan Stok")
+				fmt.Println("3. Cari Berdasarkan Nama Produk/Merk Produk/Jenis Produk")
+				fmt.Println("Masukkan menu: ")
+				fmt.Print(">>>> ")
+				fmt.Scanln(&det2)
+				if det2 == 1 {
+					showHargaSearchedData(*data, *n, *isSorted)
+				} else if det2 == 2 {
+					showStokSearchedData(*data, *n, *isSorted)
+				} else if det2 == 3 {
+					showSearchedProduct(*data, *n)
+				}
+			} else {
+				showSearchedProduct(*data, *n)
+			}
 		} else if det == 4 {
-			SortProduct(data, *n)
+			SortProduct(data, *n, isSorted)
 		}
 	}
 	fmt.Print("\033[2J")
@@ -467,6 +487,7 @@ yang dicari berdasarkan kata kunci yang di masukkan.
 Dipakai saat menampilkan menu:
 - Cari Data
 */
+//Sequential Search
 func showSearchedProduct(data Data, n int) {
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
@@ -502,6 +523,120 @@ func showSearchedProduct(data Data, n int) {
 		fmt.Println("Data tidak ditemukan!")
 		showAllProduct(data, n)
 	}
+	fmt.Println()
+}
+
+// Binary Search
+func showHargaSearchedData(data Data, n int, isSorted string) {
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	showAllProduct(data, n)
+	menuHeaderShowSearchedProduct()
+	var x int
+	fmt.Println("Masukkan harga produk yang ingin dicari (syarat: data harus TERURUT): ")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&x)
+	fmt.Println()
+
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+	tbl := table.New("No.", "Nama Produk", "Merek Produk", "Jenis Produk", "Harga Produk", "Stok Produk")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+	var mid, left, right, i int
+	i = 1
+	left = 0
+	right = n - 1
+	if isSorted == "asc" {
+		for left <= right {
+			mid = (left + right) / 2
+			if int(data[mid].harga) < x {
+				left = mid + 1
+			} else if int(data[mid].harga) > x {
+				right = mid
+			} else {
+				tbl.AddRow(i, data[mid].namaProduk, data[mid].merek, data[mid].jenis, data[mid].harga, data[mid].stok)
+				i++
+			}
+		}
+	} else if isSorted == "desc" {
+		for left <= right {
+			mid = (left + right) / 2
+			if x > int(data[mid].harga) {
+				right = mid - 1
+			} else if x < int(data[mid].harga) {
+				left = mid + 1
+			} else {
+				tbl.AddRow(i, data[mid].namaProduk, data[mid].merek, data[mid].jenis, data[mid].harga, data[mid].stok)
+				i++
+			}
+		}
+	}
+	if mid == 0 {
+		fmt.Println("Data ditemukan!")
+		tbl.Print()
+	} else {
+		fmt.Println("Data tidak ditemukan!")
+	}
+
+	fmt.Println()
+}
+
+// Binary Search
+func showStokSearchedData(data Data, n int, isSorted string) {
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	showAllProduct(data, n)
+	menuHeaderShowSearchedProduct()
+	var x int
+	fmt.Println("Masukkan stok produk yang ingin dicari (syarat: data harus TERURUT): ")
+	fmt.Print(">>>> ")
+	fmt.Scanln(&x)
+	fmt.Println()
+
+	fmt.Print("\033[2J")
+	fmt.Print("\033[H")
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+	tbl := table.New("No.", "Nama Produk", "Merek Produk", "Jenis Produk", "Harga Produk", "Stok Produk")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+	var mid, left, right, i int
+	i = 1
+	left = 0
+	right = n - 1
+	if isSorted == "asc" {
+		for left <= right {
+			mid = (left + right) / 2
+			if data[mid].stok < x {
+				left = mid + 1
+			} else if data[mid].stok > x {
+				right = mid
+			} else {
+				tbl.AddRow(i, data[mid].namaProduk, data[mid].merek, data[mid].jenis, data[mid].harga, data[mid].stok)
+				i++
+			}
+		}
+	} else if isSorted == "desc" {
+		for left <= right {
+			mid = (left + right) / 2
+			if x > data[mid].stok {
+				right = mid - 1
+			} else if x < data[mid].stok {
+				left = mid + 1
+			} else {
+				tbl.AddRow(i, data[mid].namaProduk, data[mid].merek, data[mid].jenis, data[mid].harga, data[mid].stok)
+				i++
+			}
+		}
+	}
+	if mid == 0 {
+		fmt.Println("Data ditemukan!")
+		tbl.Print()
+	} else {
+		fmt.Println("Data tidak ditemukan!")
+	}
+
 	fmt.Println()
 }
 
@@ -639,7 +774,7 @@ func editProductData(data *Data, x int) {
 
 }
 
-func SortProduct(data *Data, n int) {
+func SortProduct(data *Data, n int, isSorted *string) {
 	var det int
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
@@ -657,6 +792,7 @@ func SortProduct(data *Data, n int) {
 		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
+		*isSorted = "asc"
 		showAllProduct(*data, n)
 	} else if det == 2 {
 		sortByDescending(data, n, "nama")
@@ -664,6 +800,7 @@ func SortProduct(data *Data, n int) {
 		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
+		*isSorted = "desc"
 		showAllProduct(*data, n)
 	} else if det == 3 {
 		sortByAscending(data, n, "harga")
@@ -671,6 +808,7 @@ func SortProduct(data *Data, n int) {
 		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
+		*isSorted = "asc"
 		showAllProduct(*data, n)
 	} else if det == 4 {
 		sortByDescending(data, n, "harga")
@@ -678,6 +816,7 @@ func SortProduct(data *Data, n int) {
 		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
+		*isSorted = "desc"
 		showAllProduct(*data, n)
 	} else if det == 5 {
 		sortByAscending(data, n, "stok")
@@ -685,6 +824,7 @@ func SortProduct(data *Data, n int) {
 		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
+		*isSorted = "asc"
 		showAllProduct(*data, n)
 	} else if det == 6 {
 		sortByDescending(data, n, "stok")
@@ -692,6 +832,7 @@ func SortProduct(data *Data, n int) {
 		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
+		*isSorted = "desc"
 		showAllProduct(*data, n)
 	} else if det == 7 {
 
@@ -767,59 +908,59 @@ Prosedur untuk menu ke-tiga dan empat di dalam
 Utilitas Data, yaitu Cari Data & Urutkan Data.
 Berdasarkan nama produk, Descending.
 */
-func findMaxByString(data Data, n, pass int) int {
-	var idx int = pass - 1
-	var k int = pass
-	for k < n {
-		if data[idx].namaProduk[0] < data[k].namaProduk[0] {
-			idx = k
-		} else if data[idx].namaProduk[0] == data[k].namaProduk[0] {
-			if data[idx].namaProduk[1] < data[k].namaProduk[1] {
-				idx = k
-			} else if data[idx].namaProduk[1] == data[k].namaProduk[1] {
-				if data[idx].namaProduk[2] < data[k].namaProduk[2] {
-					idx = k
-				}
-			}
-		}
-		k++
-	}
-	return idx
-}
+// func findMaxByString(data Data, n, pass int) int {
+// 	var idx int = pass - 1
+// 	var k int = pass
+// 	for k < n {
+// 		if data[idx].namaProduk[0] < data[k].namaProduk[0] {
+// 			idx = k
+// 		} else if data[idx].namaProduk[0] == data[k].namaProduk[0] {
+// 			if data[idx].namaProduk[1] < data[k].namaProduk[1] {
+// 				idx = k
+// 			} else if data[idx].namaProduk[1] == data[k].namaProduk[1] {
+// 				if data[idx].namaProduk[2] < data[k].namaProduk[2] {
+// 					idx = k
+// 				}
+// 			}
+// 		}
+// 		k++
+// 	}
+// 	return idx
+// }
 
 /*
 Prosedur untuk menu ke-tiga dan empat di dalam
 Utilitas Data, yaitu Cari Data & Urutkan Data.
 Berdasarkan harga, Descending.
 */
-func findMaxByHarga(data Data, n, pass int) int {
-	var idx int = pass - 1
-	var k int = pass
-	for k < n {
-		if data[idx].harga < data[k].harga {
-			idx = k
-		}
-		k++
-	}
-	return idx
-}
+// func findMaxByHarga(data Data, n, pass int) int {
+// 	var idx int = pass - 1
+// 	var k int = pass
+// 	for k < n {
+// 		if data[idx].harga < data[k].harga {
+// 			idx = k
+// 		}
+// 		k++
+// 	}
+// 	return idx
+// }
 
 /*
 Prosedur untuk menu ke-tiga dan empat di dalam
 Utilitas Data, yaitu Cari Data & Urutkan Data.
 Berdasarkan stok tersedia, Descending.
 */
-func findMaxByStok(data Data, n, pass int) int {
-	var idx int = pass - 1
-	var k int = pass
-	for k < n {
-		if data[idx].stok < data[k].stok {
-			idx = k
-		}
-		k++
-	}
-	return idx
-}
+// func findMaxByStok(data Data, n, pass int) int {
+// 	var idx int = pass - 1
+// 	var k int = pass
+// 	for k < n {
+// 		if data[idx].stok < data[k].stok {
+// 			idx = k
+// 		}
+// 		k++
+// 	}
+// 	return idx
+// }
 
 /*
 Prosedur untuk empat di dalam
@@ -852,21 +993,34 @@ Utilitas Data, yaitu Urutkan Data.
 Logic utama, Descending.
 */
 func sortByDescending(data *Data, n int, det string) {
-	var pass, idx int
+	var pass, j int
 	var temp Produk
 	pass = 1
 	for pass <= n-1 {
+		j = pass
+		temp = data[j]
 		if det == "nama" {
-			idx = findMaxByString(*data, n, pass)
+			for j > 0 && temp.namaProduk > data[j-1].namaProduk {
+				data[j] = data[j-1]
+				j--
+			}
+			data[j] = temp
+			pass++
 		} else if det == "harga" {
-			idx = findMaxByHarga(*data, n, pass)
+			for j > 0 && temp.harga > data[j-1].harga {
+				data[j] = data[j-1]
+				j--
+			}
+			data[j] = temp
+			pass++
 		} else if det == "stok" {
-			idx = findMaxByStok(*data, n, pass)
+			for j > 0 && temp.stok > data[j-1].stok {
+				data[j] = data[j-1]
+				j--
+			}
+			data[j] = temp
+			pass++
 		}
-		temp = data[pass-1]
-		data[pass-1] = data[idx]
-		data[idx] = temp
-		pass++
 	}
 }
 
