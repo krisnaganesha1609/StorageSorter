@@ -34,8 +34,8 @@ type Transaksi struct {
 	subtotal         float64
 }
 
-const MAXPRODUCT int = 25
-const MAXTRANSACTION int = 1000
+const MAXPRODUCT int = 20
+const MAXTRANSACTION int = 50
 
 type Data [MAXPRODUCT]Produk
 type CatatanTransaksi [MAXTRANSACTION]Transaksi
