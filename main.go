@@ -420,12 +420,15 @@ func tampilSemuaDataProduk(data *Data, n *int, isSorted *string) {
 		} else if det == 3 {
 			if *isSorted != "" {
 				var det2 int
-				fmt.Println("1. Cari Berdasarkan Harga")
-				fmt.Println("2. Cari Berdasarkan Stok")
-				fmt.Println("3. Cari Berdasarkan Nama Produk/Merk Produk/Jenis Produk")
+				fmt.Print("\033[2J")
+				fmt.Print("\033[H")
+				menuHeaderCariDataProduk()
+				menuOptionsCariDataProduk()
 				fmt.Println("Masukkan menu: ")
 				fmt.Print(">>>> ")
 				fmt.Scanln(&det2)
+				fmt.Print("\033[2J")
+				fmt.Print("\033[H")
 				if det2 == 1 {
 					showHargaSearchedData(*data, *n, *isSorted)
 				} else if det2 == 2 {
@@ -875,8 +878,6 @@ func SortProduct(data *Data, n int, isSorted *string) {
 	} else {
 		fmt.Println("Mohon masukkan pengurutan data yang benar!")
 	}
-	// fmt.Print("\033[2J")
-	// fmt.Print("\033[H")
 	showAllProduct(*data, n)
 }
 
@@ -938,65 +939,6 @@ func findMinByStok(data Data, n, pass int) int {
 	}
 	return idx
 }
-
-/*
-Prosedur untuk menu ke-tiga dan empat di dalam
-Utilitas Data, yaitu Cari Data & Urutkan Data.
-Berdasarkan nama produk, Descending.
-*/
-// func findMaxByString(data Data, n, pass int) int {
-// 	var idx int = pass - 1
-// 	var k int = pass
-// 	for k < n {
-// 		if data[idx].namaProduk[0] < data[k].namaProduk[0] {
-// 			idx = k
-// 		} else if data[idx].namaProduk[0] == data[k].namaProduk[0] {
-// 			if data[idx].namaProduk[1] < data[k].namaProduk[1] {
-// 				idx = k
-// 			} else if data[idx].namaProduk[1] == data[k].namaProduk[1] {
-// 				if data[idx].namaProduk[2] < data[k].namaProduk[2] {
-// 					idx = k
-// 				}
-// 			}
-// 		}
-// 		k++
-// 	}
-// 	return idx
-// }
-
-/*
-Prosedur untuk menu ke-tiga dan empat di dalam
-Utilitas Data, yaitu Cari Data & Urutkan Data.
-Berdasarkan harga, Descending.
-*/
-// func findMaxByHarga(data Data, n, pass int) int {
-// 	var idx int = pass - 1
-// 	var k int = pass
-// 	for k < n {
-// 		if data[idx].harga < data[k].harga {
-// 			idx = k
-// 		}
-// 		k++
-// 	}
-// 	return idx
-// }
-
-/*
-Prosedur untuk menu ke-tiga dan empat di dalam
-Utilitas Data, yaitu Cari Data & Urutkan Data.
-Berdasarkan stok tersedia, Descending.
-*/
-// func findMaxByStok(data Data, n, pass int) int {
-// 	var idx int = pass - 1
-// 	var k int = pass
-// 	for k < n {
-// 		if data[idx].stok < data[k].stok {
-// 			idx = k
-// 		}
-// 		k++
-// 	}
-// 	return idx
-// }
 
 /*
 Prosedur untuk empat di dalam
@@ -1258,6 +1200,28 @@ func menuHeaderSortProduct() {
 	fmt.Println("-----------------------------------------------")
 	fmt.Println("\x1b[7;37m            U R U T K A N - D A T A            \x1b[0;37m")
 	fmt.Println("-----------------------------------------------")
+	fmt.Println(" ")
+}
+
+/*
+Printlines estetik pada program.
+Header Cari Data.
+*/
+func menuHeaderCariDataProduk() {
+	fmt.Println("-----------------------------------------------")
+	fmt.Println("\x1b[7;37m               C A R I - D A T A               \x1b[0;37m")
+	fmt.Println("-----------------------------------------------")
+}
+
+/*
+Printlines estetik pada program.
+Opsi Cari Data.
+*/
+func menuOptionsCariDataProduk() {
+	fmt.Println(" ")
+	fmt.Println("1. Cari Berdasarkan Harga")
+	fmt.Println("2. Cari Berdasarkan Stok")
+	fmt.Println("3. Cari Berdasarkan Nama Produk/Merk Produk/Jenis Produk")
 	fmt.Println(" ")
 }
 
