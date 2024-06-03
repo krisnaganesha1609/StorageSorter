@@ -6,6 +6,10 @@ import (
 	"time"
 	// strings module/package untuk menambah akurasi ketika melakukan pencarian data
 	"strings"
+	// bufio dan os module/package untuk membantu menginput string yang mengandung spasi pada variabel namaProduk
+	"bufio"
+	"os"
+
 	// third-party package untuk membuat tabel untuk CLI yang memudahkan pengguna untuk membaca data yang ditampilkan
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
@@ -295,7 +299,10 @@ func inputDataProduk(data *Data, n *int) {
 	menuHeaderInputDataProduk()
 	fmt.Println("Nama Produk:")
 	fmt.Print(">>>> ")
-	fmt.Scanln(&data[*n].namaProduk)
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		data[*n].namaProduk = scanner.Text()
+	}
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	for data[*n].namaProduk == "" {
@@ -761,7 +768,10 @@ func editProductData(data *Data, x int) {
 	menuHeaderEditData()
 	fmt.Println("Nama Produk:")
 	fmt.Print(">>>> ")
-	fmt.Scanln(&data[n-1].namaProduk)
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		data[n-1].namaProduk = scanner.Text()
+	}
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	if data[n-1].namaProduk == "\n" {
