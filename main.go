@@ -63,6 +63,57 @@ func main() {
 	fmt.Print("\033[H")
 	menuStart()
 	time.Sleep(3 * time.Second)
+	dataProduk[0].namaProduk = "iPhone 14"
+	dataProduk[0].merek = "Smartphone"
+	dataProduk[0].jenis = "Apple"
+	dataProduk[0].harga = 13999.99
+	dataProduk[0].stok = 50
+	dataProduk[1].namaProduk = "Galaxy S22"
+	dataProduk[1].merek = "Samsung"
+	dataProduk[1].jenis = "Smartphone"
+	dataProduk[1].harga = 12999.99
+	dataProduk[1].stok = 70
+	dataProduk[2].namaProduk = "XPS 13"
+	dataProduk[2].merek = "Dell"
+	dataProduk[2].jenis = "Laptop"
+	dataProduk[2].harga = 15999.99
+	dataProduk[2].stok = 30
+	dataProduk[3].namaProduk = "Thinkpad X1 Carbon"
+	dataProduk[3].merek = "Lenovo"
+	dataProduk[3].jenis = "Laptop"
+	dataProduk[3].harga = 17999.99
+	dataProduk[3].stok = 20
+	dataProduk[4].namaProduk = "WH-100XM4"
+	dataProduk[4].merek = "Sony"
+	dataProduk[4].jenis = "Headphone"
+	dataProduk[4].harga = 3999.99
+	dataProduk[4].stok = 100
+	dataProduk[5].namaProduk = "AirPods Pro"
+	dataProduk[5].merek = "Apple"
+	dataProduk[5].jenis = "Earbud"
+	dataProduk[5].harga = 2499.99
+	dataProduk[5].stok = 200
+	dataProduk[6].namaProduk = "OLED55CXPUA"
+	dataProduk[6].merek = "LG"
+	dataProduk[6].jenis = "TV"
+	dataProduk[6].harga = 19999.99
+	dataProduk[6].stok = 15
+	dataProduk[7].namaProduk = "PS5"
+	dataProduk[7].merek = "Sony"
+	dataProduk[7].jenis = "Konsol Game"
+	dataProduk[7].harga = 7999.99
+	dataProduk[7].stok = 40
+	dataProduk[8].namaProduk = "MacBook Pro 14''"
+	dataProduk[8].merek = "Apple"
+	dataProduk[8].jenis = "Laptop"
+	dataProduk[8].harga = 24999.99
+	dataProduk[8].stok = 25
+	dataProduk[9].namaProduk = "Surface Pro 8"
+	dataProduk[9].merek = "Microsoft"
+	dataProduk[9].jenis = "Tablet"
+	dataProduk[9].harga = 13999.99
+	dataProduk[9].stok = 35
+	nData = 10
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 
@@ -489,6 +540,7 @@ Dipakai saat menampilkan menu:
 */
 //Sequential Search
 func showSearchedProduct(data Data, n int) {
+	defer timeElapsed(time.Now(), "Sequential")
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	showAllProduct(data, n)
@@ -528,6 +580,7 @@ func showSearchedProduct(data Data, n int) {
 
 // Binary Search
 func showHargaSearchedData(data Data, n int, isSorted string) {
+	defer timeElapsed(time.Now(), "Binary")
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	showAllProduct(data, n)
@@ -585,6 +638,7 @@ func showHargaSearchedData(data Data, n int, isSorted string) {
 
 // Binary Search
 func showStokSearchedData(data Data, n int, isSorted string) {
+	defer timeElapsed(time.Now(), "Binary")
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
 	showAllProduct(data, n)
@@ -767,9 +821,9 @@ func editProductData(data *Data, x int) {
 	fmt.Print("\033[H")
 	showSelectedProduct(*data, n)
 	menuHeaderEditData()
-	fmt.Println("Data Ke -", n, "Berhasil Diedit")
 	fmt.Print("\033[2J")
 	fmt.Print("\033[H")
+	fmt.Println("Data Ke -", n, "Berhasil Diedit")
 	showAllProduct(*data, x)
 
 }
@@ -788,59 +842,41 @@ func SortProduct(data *Data, n int, isSorted *string) {
 	fmt.Print("\033[H")
 	if det == 1 {
 		sortByAscending(data, n, "nama")
-		showAllProduct(*data, n)
-		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		*isSorted = "asc"
-		showAllProduct(*data, n)
 	} else if det == 2 {
 		sortByDescending(data, n, "nama")
-		showAllProduct(*data, n)
-		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		*isSorted = "desc"
-		showAllProduct(*data, n)
 	} else if det == 3 {
 		sortByAscending(data, n, "harga")
-		showAllProduct(*data, n)
-		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		*isSorted = "asc"
-		showAllProduct(*data, n)
 	} else if det == 4 {
 		sortByDescending(data, n, "harga")
-		showAllProduct(*data, n)
-		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		*isSorted = "desc"
-		showAllProduct(*data, n)
 	} else if det == 5 {
 		sortByAscending(data, n, "stok")
-		showAllProduct(*data, n)
-		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		*isSorted = "asc"
-		showAllProduct(*data, n)
 	} else if det == 6 {
 		sortByDescending(data, n, "stok")
-		showAllProduct(*data, n)
-		menuHeaderSortProduct()
 		fmt.Println()
 		fmt.Println("Data berhasil di urutkan")
 		*isSorted = "desc"
-		showAllProduct(*data, n)
 	} else if det == 7 {
 
 	} else {
 		fmt.Println("Mohon masukkan pengurutan data yang benar!")
 	}
-	fmt.Print("\033[2J")
-	fmt.Print("\033[H")
+	// fmt.Print("\033[2J")
+	// fmt.Print("\033[H")
 	showAllProduct(*data, n)
 }
 
@@ -966,8 +1002,10 @@ Berdasarkan stok tersedia, Descending.
 Prosedur untuk empat di dalam
 Utilitas Data, yaitu Urutkan Data.
 Logic utama, Ascending.
+SELECTION SORT
 */
 func sortByAscending(data *Data, n int, det string) {
+	defer timeElapsed(time.Now(), "Selection")
 	var pass, idx int
 	var temp Produk
 	pass = 1
@@ -991,8 +1029,10 @@ func sortByAscending(data *Data, n int, det string) {
 Prosedur untuk empat di dalam
 Utilitas Data, yaitu Urutkan Data.
 Logic utama, Descending.
+INSERTION SORT
 */
 func sortByDescending(data *Data, n int, det string) {
+	defer timeElapsed(time.Now(), "Insertion")
 	var pass, j int
 	var temp Produk
 	pass = 1
@@ -1024,6 +1064,15 @@ func sortByDescending(data *Data, n int, det string) {
 	}
 }
 
+// Fitur Eksplorasi
+func timeElapsed(start time.Time, name string) func() {
+	elapsed := time.Since(start).Milliseconds()
+	return func() {
+		fmt.Println()
+		fmt.Printf("%s time elapsed: %dms \n", name, elapsed)
+	}
+}
+
 /*
 Printlines estetik pada program.
 Program startup.
@@ -1035,7 +1084,7 @@ func menuStart() {
 	fmt.Println(" ___) | || (_) | | | (_| | (_| |  __/   ")
 	fmt.Println("|____/ \\__\\___/|_|  \\__,_|\\__, |\\___| ")
 	fmt.Println("                          |___/        Aplikasi      ")
-	fmt.Println(" ____             _                    Managemen Inventaris   ")
+	fmt.Println(" ____             _                    Manajemen Inventaris   ")
 	fmt.Println("/ ___|  ___  _ __| |_ ___ _ __         Toko Elektronik   ")
 	fmt.Println("\\___ \\ / _ \\| '__| __/ _ \\ '__|        ")
 	fmt.Println(" ___) | (_) | |  | ||  __/ |           Dibuat oleh:")
