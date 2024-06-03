@@ -31,7 +31,8 @@ Sistem Manajemen Inventaris Toko Elektronik adalah aplikasi berbasis pemrograman
 - Time-Elapsed Detector
 
 ## Screenshots
-
+| Lokasi | Screenshots |
+| --- | --- |
 | Menu Utama | ![utama](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/01.png) |
 | Pengisian Data | ![isidata](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/02.png) |
 | Utilitas Data | ![utildata](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/03.png) |
