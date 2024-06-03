@@ -32,3 +32,12 @@ Sistem Manajemen Inventaris Toko Elektronik adalah aplikasi berbasis pemrograman
 
 ## Screenshots
 
+| ![utama](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/01.png) |
+| ![isidata](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/02.png) |
+| ![utildata](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/03.png) |
+| ![edit](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/04.png) |
+| ![hapus](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/05.png) |
+| ![cari](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/06.png) |
+| ![urut](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/07.png) |
+| ![isitransaksi](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/08.png) |
+| ![transaksi](https://github.com/riarumoda/StorageSorter/blob/main/screenshots/09.png) |
