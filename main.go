@@ -68,8 +68,8 @@ func main() {
 	menuStart()
 	time.Sleep(3 * time.Second)
 	dataProduk[0].namaProduk = "iPhone 14"
-	dataProduk[0].merek = "Smartphone"
-	dataProduk[0].jenis = "Apple"
+	dataProduk[0].merek = "Apple"
+	dataProduk[0].jenis = "Smartphone"
 	dataProduk[0].harga = 13999.99
 	dataProduk[0].stok = 50
 	dataProduk[1].namaProduk = "Galaxy S22"
